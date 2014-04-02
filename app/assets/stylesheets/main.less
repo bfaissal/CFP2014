@@ -1,0 +1,133 @@
+@import "utils/prefixes";
+
+
+.my-show-hide-animation.ng-hide-remove,
+.my-show-hide-animation.ng-hide-add {
+  /* remember, the .hg-hide class is added to element
+     when the active class is added causing it to appear
+     as hidden. Therefore set the styling to display=block
+     so that the hide animation is visible */
+  display:block!important;
+}
+
+.my-show-hide-animation.ng-hide-add {
+  -webkit-animation:0.5s hide;
+  animation:0.5s hide;
+}
+
+@keyframes hide {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@-webkit-keyframes hide {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+.my-show-hide-animation.ng-hide-remove {
+  -webkit-animation:0.5s show;
+  animation:0.5s show;
+}
+
+@keyframes show {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+
+@-webkit-keyframes show {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+
+.talkList.ng-hide-add {
+  .animation(myfirst 0s ease forwards);
+}
+.talkList.ng-hide-remove{
+  .animation(myfirst2 0.5s ease 0.5s forwards);
+}
+.animated
+{
+  .animation(myfirst 0.5s ease forwards);
+}
+.animated2
+{
+  .animation(myfirst2 0.5s ease 0.5s forwards);
+}
+.backtologin
+{
+  .animation(myfirst 0.5s ease 0.5s forwards);
+}
+.backtologin2
+{
+  .animation(myfirst2 0.5s ease 1s forwards);
+}
+.transform(@trans){
+  -webkit-transform:@trans;
+  transform:@trans;
+  -moz-transform:@trans;
+}
+/* Chrome, Safari, Opera */
+@-webkit-keyframes myfirst
+{
+  0% {
+    .transform(translate(0px));
+    opacity:1;
+
+  }
+  100% {
+    .transform(translate(30px));
+    z-index: 10;
+    opacity:0;
+  }
+}
+
+@-webkit-keyframes myfirst2
+{
+  from {
+    .transform(translate(20px));
+    opacity:0;
+  }
+  to {
+    .transform(translate(0px));
+    z-index: 11;
+    opacity:1;
+  }
+}
+
+
+body{
+  font-family: 'Poiret One', cursive;
+}
+#loginBox{
+  margin: auto;
+  width: 60%;
+}
+#registrationBox{
+  margin: auto;
+  width: 60%;
+}
+#container{
+  width: 100%;
+
+}
+#registrationContainer{
+  margin: auto;
+  width: 100%;
+  position: absolute;
+  left: 0px;
+  z-index: 10;
+  opacity: 0;
+}
+#loginContainer{
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  left: 0px;
+  z-index: 11;
+}
+
+.talks .talk{
+  min-width: 100px;
+  width: 90%;
+}

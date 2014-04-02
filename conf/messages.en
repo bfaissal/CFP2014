@@ -1,0 +1,2 @@
+globals.serverInternalError.message="An unexpected error occured, please try again if the error persist contact the site administrators"
+registration.creationsuccess.message="Account creataed {0}"

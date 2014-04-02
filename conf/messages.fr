@@ -1,0 +1,1 @@
+globals.serverInternalError.message="FR:An unexpected error occured, please try again if the error persist contact the site administrators"

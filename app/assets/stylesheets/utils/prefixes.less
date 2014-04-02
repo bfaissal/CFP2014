@@ -1,0 +1,51 @@
+.transform(@trans){
+  -webkit-transform:@trans;
+  transform:@trans;
+  -moz-transform:@trans;
+}
+.animation(@annim){
+  -webkit-animation: @annim;
+  -moz-animation: @annim;
+  animation: @annim;
+}
+/*
+@-webkit-keyframes some-animation {.mixi-frames;}
+@-moz-keyframes some-animation {.mixi-frames;}
+@-ms-keyframes some-animation {.mixi-frames;}
+@-o-keyframes some-animation {.mixi-frames;}
+@keyframes some-animation {.mixi-frames;}
+.mixi-frames () {
+  from {width: 254px;}
+  to {width: 512px;}
+}
+/*
+.keyframe(@fromrules,@torules,@name){
+  @-webkit-keyframes @name
+  {
+    from {
+      @fromrules();
+    }
+    to {
+      @fromrules();
+    }
+  }
+@keyframes @name
+  {
+  0% {
+      @from();
+    }
+  100% {
+    @to();
+    }
+  }
+@keyframes @name
+  {
+    0% {
+      @from();
+    }
+    100% {
+      @to();
+    }
+  }
+}
+*/
