@@ -3,7 +3,7 @@
 @main("JMaghreb Call For Paper") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 } {
-    <div id="container" ng-app="jmaghreb">
+    <div id="container" ng-app="jmaghreb" style="margin-top: 50px;" ng-cloak>
         <div class="ui one column middle aligned relaxed grid basic segment" id="loginContainer" ng-controller="LoginCtrl">
             <div class="column" id="loginBox">
                 <div class="ui form segment">
@@ -46,7 +46,6 @@
                     <div class="field">
                         <label>First Name</label>
                         <input placeholder="First Name" type="text" ng-model="register.fname">
-                        {{register.fname}}
                     </div>
                     <div class="field">
                         <label>Last Name</label>
@@ -80,9 +79,9 @@
 
                 <div style="width : 100 % ; text-align : center">
                     <div class="ui buttons center">
-                        <button class="ui blue button" ng-click="doRegister()">Submit</button>
+                        <button class="ui blue button" ng-click="save()">Submit</button>
 
-                        <button class="ui red submit button" onclick="jQuery ( '#registrationContainer' ).removeClass ( 'animated2' ) ; jQuery ( '#loginContainer' ).removeClass ( 'animated' ) ;">
+                        <button class="ui red submit button">
                             Cancel</button>
                     </div>
                 </div>

@@ -86,8 +86,8 @@ jmaghreb.directive('uploader', function ($http) {
             '</div>' +
 
             '<div id="{{id}}Holder" ng-show="image != null && image !=\'\'" style="display: block"> ' +
-            '<div><img style="width: 150px;" ng-show="isEdit" ng-src=\'/images/{{ image }}\'/>' +
-            '<img style="width: 150px;" ng-src=\'/tmpImages/{{ image }}\'/></div>' +
+            '<div>' +
+            '<img style="width: 150px;" ng-src=\'{{ image }}\'/></div>' +
             '<button class="btn btn-danger" ng-click="canceUpload()">Delete</button>  ' +
             '</div>' +
             '</div>'

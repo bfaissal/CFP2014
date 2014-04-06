@@ -1,0 +1,79 @@
+@(message: String)
+
+@main("JMaghreb Call For Paper") {
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+} {
+    <div class="ui fixed transparent main small menu" style="top: 0;left: 0" ng-controller="" ng-cloak>
+        <a class=" item" href="/cfp">
+            <i class="home icon"></i> Home
+        </a>
+        <a class="active item" href="/profile">
+            <i class="user icon"></i> Profile
+        </a>
+        <div class="right menu">
+
+
+            <div class="item">
+                <a class="ui teal button" href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div id="container" ng-app="jmaghreb" style="margin-top: 50px;" ng-cloak>
+
+        <div id="profileContainer" ng-controller="ProfileCtrl" ng-cloak>
+            <div class="ui form segment" id="registrationBox">
+                <div class="two fields">
+                    <div class="field">
+                        <label>First Name</label>
+                        <input placeholder="First Name" type="text" ng-model="register.fname">
+
+                    </div>
+                    <div class="field">
+                        <label>Last Name</label>
+                        <input placeholder="Last Name" type="text" ng-model="register.lname">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Email</label>
+                    <input placeholder="Email" type="text" ng-model="register._id">
+                </div>
+                <div class="field">
+                    <label>Picture</label>
+                    <uploader id="pico" image="register.image" url="upload"></uploader>
+                </div>
+
+
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" ng-model="register.password">
+                </div>
+                <div class="field">
+                    <label>Confirm Password</label>
+                    <input type="password" ng-model="register.cpassword">
+                </div>
+
+                <div style="width : 100 % ; text-align : center">
+                    <div class="ui buttons center">
+                        <button class="ui blue button" ng-click="editProfile()">Save</button>
+
+                        <button class="ui red submit button" ng-click="initProfile()">
+                            Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div class="ui success message show-hide-animation" ng-show="saveSuccess" style="position: fixed;top: 100px;width: 50%;" ng-cloak>
+                <i class="close icon" ng-click="saveSuccess = false"></i>
+                <div class="header">
+                    Saved successfully.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+}{
+        <script src="@routes.Assets.at("javascripts/jquery.ui.widget.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jquery.iframe-transport.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jquery.fileupload.js")" type="text/javascript"></script>
+    }

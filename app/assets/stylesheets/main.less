@@ -1,8 +1,17 @@
 @import "utils/prefixes";
 
+.transform(@trans){
+  -webkit-transform:@trans;
+  transform:@trans;
+  -moz-transform:@trans;
+}
 
-.my-show-hide-animation.ng-hide-remove,
-.my-show-hide-animation.ng-hide-add {
+.show-hide-animation{
+  position: absolute;
+  width: 100%;
+}
+.show-hide-animation.ng-hide-remove,
+.show-hide-animation.ng-hide-add {
   /* remember, the .hg-hide class is added to element
      when the active class is added causing it to appear
      as hidden. Therefore set the styling to display=block
@@ -10,34 +19,53 @@
   display:block!important;
 }
 
-.my-show-hide-animation.ng-hide-add {
-  -webkit-animation:0.5s hide;
-  animation:0.5s hide;
+.show-hide-animation.ng-hide-add {
+  -webkit-animation:0.5s hide forwards;
+  animation:0.5s hide forwards;
+
 }
 
 @keyframes hide {
-  from { opacity:1; }
-  to { opacity:0; }
+  from { opacity:1;
+    .transform(translate(0px));
+  }
+  to { opacity:0;
+    .transform(translate(30px));
+  }
 }
 
 @-webkit-keyframes hide {
-  from { opacity:1; }
-  to { opacity:0; }
+  from { opacity:1;
+    .transform(translate(0px));
+  }
+  to { opacity:0;
+    .transform(translate(30px));
+  }
 }
 
-.my-show-hide-animation.ng-hide-remove {
-  -webkit-animation:0.5s show;
-  animation:0.5s show;
+.show-hide-animation.ng-hide-remove {
+  -webkit-animation:1s show forwards;
+  animation:1s show forwards;
+  //animation-delay:0.5s;
+  //-webkit-animation-delay:0.5s;
 }
 
 @keyframes show {
-  from { opacity:0; }
-  to { opacity:1; }
+  from { opacity:0;
+    .transform(translate(30px));
+  }
+  to { opacity:1;
+    .transform(translate(0px));
+  }
 }
 
 @-webkit-keyframes show {
-  from { opacity:0; }
-  to { opacity:1; }
+  from { opacity:0;
+    .transform(translate(30px));
+  }
+  to { opacity:1;
+    .transform(translate(0px));
+  }
 }
 
 .talkList.ng-hide-add {
@@ -62,11 +90,7 @@
 {
   .animation(myfirst2 0.5s ease 1s forwards);
 }
-.transform(@trans){
-  -webkit-transform:@trans;
-  transform:@trans;
-  -moz-transform:@trans;
-}
+
 /* Chrome, Safari, Opera */
 @-webkit-keyframes myfirst
 {
@@ -130,4 +154,14 @@ body{
 .talks .talk{
   min-width: 100px;
   width: 90%;
+}
+.button_action{
+  display: none;
+}
+.talk:hover .button_action{
+  display: block;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
 }
