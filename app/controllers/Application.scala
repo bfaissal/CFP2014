@@ -78,54 +78,11 @@ object Application extends Controller with MongoController {
       rq.headers.keys.foldLeft[WSRequestHolder](url)((h, a) => h.withHeaders(a -> {
         rq.headers.get(a).get
       })).post(rq.body).map(r => {
-        println("r = "+r.body)
         Ok(Json.obj("files" -> Json.arr(Json.obj("name" -> (Play.current.configuration.getString("upload.server").get+"cfp/"+fileName+".png")))))
       })
     }
   }
-  def uploads = Action(parse.maxLength(maxLength = 1024000, parse.multipartFormData)) {
-    request =>
-      request.body match {
-        case Right(multiPartBody) =>
-          multiPartBody.file("file").map {
-            picture =>
-              picture.contentType match {
-                  
-                case Some("image/gif") | Some("image/jpg") | Some("image/png") | Some("image/jpeg") =>
-                  val image = System.currentTimeMillis().toString
-                  val res = Json.obj("files" -> Json.arr(Json.obj("name" -> image)))
-                  picture.ref.moveTo(new File(System.getenv("TMPDIR") + "uploads/" + image + ".gif"))
 
-                  Ok(res).as(JSON)
-                case _ => BadRequest("incorrect file Type")
-              }
-          }.getOrElse {
-            Redirect(routes.Application.index).flashing("error" -> "Missing file")
-          }
-        case Left(multiPartBody) => BadRequest("Max size exceeded")
-        case _ => BadRequest("Other")
-      }
-  }
-
-  def images(id: String) = Action {
-    try {
-      Ok.sendFile(new File(System.getenv("OPENSHIFT_DATA_DIR") + "images/" + id + ".gif")).as("image/png")
-    }
-    catch {
-      case e: FileNotFoundException => NotFound("Image not found")
-    }
-
-  }
-
-  def tempImages(id: String) = Action {
-    try {
-      Ok.sendFile(new File(System.getenv("TMPDIR") + "uploads/" + id + ".gif")).as("image/png")
-    }
-    catch {
-      case e: FileNotFoundException => NotFound("Image not found");
-    }
-
-  }
 
   def deleteImages(id: String, action: Boolean) = Action {
     implicit request => {
