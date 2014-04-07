@@ -23,7 +23,7 @@ jmaghreb.controller('LoginCtrl', function ($scope, $http) {
 
 jmaghreb.controller('RegistrationCtrl', function ($scope, $http) {
     $scope.register = {};
-    $scope.doRegister = function () {
+    $scope.save = function () {
         $http.post("/register", $scope.register).error(function (error) {
             alert("error=" + error)
         })
