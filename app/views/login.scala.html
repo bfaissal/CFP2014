@@ -41,51 +41,91 @@
 
         </div>
         <div id="registrationContainer" ng-controller="RegistrationCtrl" class="show-hide-animation"  ng-show="!loginShow">
-            <div class="ui form segment" id="registrationBox">
-                <div class="two fields">
-                    <div class="field">
-                        <label>First Name</label>
-                        <input placeholder="First Name" type="text" ng-model="register.fname">
+            <form name="registrationForm" novalidate>
+                <div class="ui form segment" id="registrationBox">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>First Name</label>
+                            <div class="ui left labeled input">
+                                <input ng-required="true" placeholder="First Name" type="text" ng-model="register.fname">
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Last Name</label>
+                            <div class="ui left labeled input">
+                                <input  ng-required="true" placeholder="Last Name" type="text" ng-model="register.lname">
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="field">
-                        <label>Last Name</label>
-                        <input placeholder="Last Name" type="text" ng-model="register.lname">
+                        <label>Email</label>
+                        <div class="ui left labeled input">
+                            <input  ng-required="true" placeholder="Email" type="text" ng-model="register._id">
+                            <div class="ui corner label">
+                                <i class="icon asterisk"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Twitter</label>
+                        <div class="ui left labeled icon input">
+                            <input placeholder="Your Twitter accounte" type="text" ng-model="register.twitter">
+                            <i class="twitter icon"></i>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Picture</label>
+                        <uploader id="pico" image="register.image" url="upload"></uploader>
+                    </div>
+
+
+                    <div class="field">
+                        <label>Password</label>
+                        <div class="ui left labeled input">
+                            <input  ng-required="true" type="password" ng-model="register.password">
+                            <div class="ui corner label">
+                                <i class="icon asterisk"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Confirm Password</label>
+                        <div class="ui left labeled input">
+                            <input  ng-required="true" type="password" ng-model="register.cpassword">
+                            <div class="ui corner label">
+                                <i class="icon asterisk"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <input type="checkbox">
+                            <label>I agree to the terms and conditions</label>
+                        </div>
+                    </div>
+
+                    <div style="width : 100 % ; text-align : center">
+                        <div class="ui buttons center">
+                            <button ng-class="disabled(registrationForm.$invalid)" ng-disabled="registrationForm.$invalid" class="ui blue button" ng-click="save()">Submit</button>
+
+                            <button class="ui red submit button" ng-click="cancel()">
+                                Cancel</button>
+                        </div>
+                    </div>
+                    <div class="ui success message show-hide-animation" ng-show="saveSuccess" style="position: fixed;top: 100px;width: 50%;" ng-cloak>
+                        <i class="close icon" ng-click="saveSuccess = false"></i>
+                        <div class="header">
+                            Saved successfully.
+                        </div>
                     </div>
                 </div>
-                <div class="field">
-                    <label>Email</label>
-                    <input placeholder="Email" type="text" ng-model="register._id">
-                </div>
-                <div class="field">
-                    <label>Picture</label>
-                    <uploader id="pico" image="register.image" url="upload"></uploader>
-                </div>
-
-
-                <div class="field">
-                    <label>Password</label>
-                    <input type="password" ng-model="register.password">
-                </div>
-                <div class="field">
-                    <label>Confirm Password</label>
-                    <input type="password" ng-model="register.cpassword">
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <input type="checkbox">
-                        <label>I agree to the terms and conditions</label>
-                    </div>
-                </div>
-
-                <div style="width : 100 % ; text-align : center">
-                    <div class="ui buttons center">
-                        <button class="ui blue button" ng-click="save()">Submit</button>
-
-                        <button class="ui red submit button" ng-click="cancel()">
-                            Cancel</button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 

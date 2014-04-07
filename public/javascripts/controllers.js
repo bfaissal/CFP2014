@@ -30,20 +30,34 @@ jmaghreb.controller('MainCtrl', function ($scope, $http) {
         $scope.loginShow = true;
     }
 })
-jmaghreb.controller('RegistrationCtrl', function ($scope, $http) {
+jmaghreb.controller('RegistrationCtrl', function ($scope, $http,$timeout) {
 
     $scope.register = {};
 
     $scope.save = function () {
         $http.post("/register", $scope.register).error(function (error) {
-            alert("error=" + error)
-        })
+            alert(error)
+        }).success(function (data) {
+                $scope.saveSuccess = true;
+                $timeout(function(){$scope.saveSuccess = false;},3000)
+            })
+    }
+    $scope.disabled = function(disabled){
+        if(disabled)
+            return "disabled";
+        else
+            return "";
     }
 })
 
 jmaghreb.controller('ProfileCtrl', function ($scope, $http, $timeout) {
     $scope.saveSuccess = false;
-
+    $scope.disabled = function(disabled){
+        if(disabled)
+            return "disabled";
+        else
+            return "";
+    }
     $scope.initProfile = function(){
         $http.get("/connectedUser").success(function (data) {
             $scope.register = data
