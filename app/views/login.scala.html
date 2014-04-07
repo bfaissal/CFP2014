@@ -3,8 +3,8 @@
 @main("JMaghreb Call For Paper") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 } {
-    <div id="container" ng-app="jmaghreb" style="margin-top: 50px;" ng-cloak>
-        <div class="ui one column middle aligned relaxed grid basic segment" id="loginContainer" ng-controller="LoginCtrl">
+    <div id="container" ng-app="jmaghreb" style="margin-top: 50px;" ng-cloak ng-controller="MainCtrl">
+        <div class="ui one column middle aligned relaxed grid basic segment show-hide-animation" ng-show="loginShow" id="loginContainer" ng-controller="LoginCtrl">
             <div class="column" id="loginBox">
                 <div class="ui form segment">
                     <div class="field">
@@ -31,7 +31,7 @@
                         <div class="ui buttons center">
                             <div class="ui blue button" ng-click="doLogin()">Login</div>
                             <div class="or"></div>
-                            <div class="ui blue button" onclick="jQuery ( '#loginContainer' ).addClass ( 'animated' ) ; jQuery ( '#registrationContainer' ).addClass ( 'animated2' )">
+                            <div class="ui blue button" ng-click="goRegister()">
                                 Register</div>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
 
 
         </div>
-        <div id="registrationContainer" ng-controller="RegistrationCtrl">
+        <div id="registrationContainer" ng-controller="RegistrationCtrl" class="show-hide-animation"  ng-show="!loginShow">
             <div class="ui form segment" id="registrationBox">
                 <div class="two fields">
                     <div class="field">
@@ -81,7 +81,7 @@
                     <div class="ui buttons center">
                         <button class="ui blue button" ng-click="save()">Submit</button>
 
-                        <button class="ui red submit button">
+                        <button class="ui red submit button" ng-click="cancel()">
                             Cancel</button>
                     </div>
                 </div>

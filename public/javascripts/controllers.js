@@ -21,8 +21,19 @@ jmaghreb.controller('LoginCtrl', function ($scope, $http) {
 })
 
 
+jmaghreb.controller('MainCtrl', function ($scope, $http) {
+    $scope.loginShow = true;
+    $scope.goRegister = function () {
+        $scope.loginShow = false;
+    }
+    $scope.cancel = function () {
+        $scope.loginShow = true;
+    }
+})
 jmaghreb.controller('RegistrationCtrl', function ($scope, $http) {
+
     $scope.register = {};
+
     $scope.save = function () {
         $http.post("/register", $scope.register).error(function (error) {
             alert("error=" + error)
