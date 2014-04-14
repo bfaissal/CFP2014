@@ -13,10 +13,26 @@ jmaghreb.controller('MainController', function ($scope, $route, $routeParams, $l
     $scope.$routeParams = $routeParams;
 })
 jmaghreb.controller('LoginCtrl', function ($scope, $http) {
+    $scope.showMessages = "hidden";
+    $scope.errorClass = function(field){
+        if(!registrationForm[field].$invalid){
+            return "error";
+        }
+        else{
+            return "error";
+        }
+    }
     $scope.doLogin = function () {
+        $scope.showMessages = "hidden";
+        try{
         $http.post("/login/" + $scope.login._id + "/" + $scope.login.password).success(function () {
             window.location.href = "/cfp"
-        })
+        }).error(function(){
+                $scope.showMessages = "shown";
+            })
+        }catch(e){
+            $scope.showMessages = "shown";
+        }
     }
 })
 

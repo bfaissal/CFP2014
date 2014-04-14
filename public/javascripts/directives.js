@@ -72,8 +72,9 @@ jmaghreb.directive('uploader', function ($http) {
 
             }
         },
-        template: '<div><span id="{{ id }}Btn" ng-show="image == null || image ==\'\'" class="btn btn-success fileinput-button">' +
-            '<i class="icon-plus icon-white"></i>    ' +
+        template: '<div>'+
+            '<span id="{{ id }}Btn" ng-show="image == null || image ==\'\'" class="ui labeled icon small button fileinput-button">' +
+            '<i class="cloud upload icon"></i>    ' +
             '<span>Select file ...</span>' +
             '<!-- The file input field used as target for the file upload widget -->   ' +
             '<input id="{{id}}" type="file" class="input-xxlarge" name="file"/> ' +
@@ -88,7 +89,7 @@ jmaghreb.directive('uploader', function ($http) {
             '<div id="{{id}}Holder" ng-show="image != null && image !=\'\'" style="display: block"> ' +
             '<div>' +
             '<img style="width: 150px;" ng-src=\'{{ image }}\'/></div>' +
-            '<button class="btn btn-danger" ng-click="canceUpload()">Delete</button>  ' +
+            '<button class="ui red small button" ng-click="canceUpload()">Delete</button>  ' +
             '</div>' +
             '</div>'
 

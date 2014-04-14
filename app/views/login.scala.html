@@ -6,7 +6,11 @@
     <div id="container" ng-app="jmaghreb" style="margin-top: 50px;" ng-cloak ng-controller="MainCtrl">
         <div class="ui one column middle aligned relaxed grid basic segment show-hide-animation" ng-show="loginShow" id="loginContainer" ng-controller="LoginCtrl">
             <div class="column" id="loginBox">
+
                 <div class="ui form segment">
+                    <div class="ui error message" ng-class="showMessages">
+                        Incorrect username and/or password
+                    </div>
                     <div class="field">
                         <label>Email</label>
                         <div class="ui left labeled icon input">
@@ -44,29 +48,29 @@
             <form name="registrationForm" novalidate>
                 <div class="ui form segment" id="registrationBox">
                     <div class="two fields">
-                        <div class="field">
+                        <div class="field" ng-class="errorClass('fname')">
                             <label>First Name</label>
                             <div class="ui left labeled input">
-                                <input ng-required="true" placeholder="First Name" type="text" ng-model="register.fname">
+                                <input name="fname" ng-required="true" placeholder="First Name" type="text" ng-model="register.fname">
                                 <div class="ui corner label">
                                     <i class="icon asterisk"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field" ng-class="errorClass('fname')">
                             <label>Last Name</label>
                             <div class="ui left labeled input">
-                                <input  ng-required="true" placeholder="Last Name" type="text" ng-model="register.lname">
+                                <input name="lname" ng-required="true" placeholder="Last Name" type="text" ng-model="register.lname">
                                 <div class="ui corner label">
                                     <i class="icon asterisk"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="field">
+                    <div class="field" ng-class="errorClass('email')">
                         <label>Email</label>
                         <div class="ui left labeled input">
-                            <input  ng-required="true" placeholder="Email" type="text" ng-model="register._id">
+                            <input name="email" ng-required="true" placeholder="Email" type="email" ng-model="register._id">
                             <div class="ui corner label">
                                 <i class="icon asterisk"></i>
                             </div>
@@ -85,19 +89,19 @@
                     </div>
 
 
-                    <div class="field">
+                    <div class="field" ng-class="errorClass('password')">
                         <label>Password</label>
                         <div class="ui left labeled input">
-                            <input  ng-required="true" type="password" ng-model="register.password">
+                            <input name="password" ng-required="true" type="password" ng-model="register.password">
                             <div class="ui corner label">
                                 <i class="icon asterisk"></i>
                             </div>
                         </div>
                     </div>
-                    <div class="field">
+                    <div class="field" ng-class="errorClass('cpassword')">
                         <label>Confirm Password</label>
                         <div class="ui left labeled input">
-                            <input  ng-required="true" type="password" ng-model="register.cpassword">
+                            <input name="cpassword" ng-required="true" type="password" ng-model="register.cpassword">
                             <div class="ui corner label">
                                 <i class="icon asterisk"></i>
                             </div>
@@ -105,7 +109,7 @@
                     </div>
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <input type="checkbox">
+                            <input name="consent" type="checkbox">
                             <label>I agree to the terms and conditions</label>
                         </div>
                     </div>
@@ -114,7 +118,7 @@
                         <div class="ui buttons center">
                             <button ng-class="disabled(registrationForm.$invalid)" ng-disabled="registrationForm.$invalid" class="ui blue button" ng-click="save()">Submit</button>
 
-                            <button class="ui red submit button" ng-click="cancel()">
+                            <button class="ui submit button" ng-click="cancel()">
                                 Cancel</button>
                         </div>
                     </div>

@@ -1,4 +1,15 @@
-@import "utils/prefixes";
+//@import "utils/prefixes";
+
+.transform(@trans){
+  -webkit-transform:@trans;
+  transform:@trans;
+  -moz-transform:@trans;
+}
+.animation(@annim){
+  -webkit-animation: @annim;
+  -moz-animation: @annim;
+  animation: @annim;
+}
 
 .transform(@trans){
   -webkit-transform:@trans;
@@ -166,3 +177,53 @@ body{
   display: none !important;
 }
 
+.shown{
+  display: block !important;
+}
+
+.ui.form .fields.error_true_true .field textarea, .ui.form .fields.error_true_true .field input[type=text], .ui.form .fields.error_true_true .field input[type=email], .ui.form .fields.error_true_true .field input[type=date], .ui.form .fields.error_true_true .field input[type=password], .ui.form .fields.error_true_true .field input[type=number], .ui.form .fields.error_true_true .field input[type=url], .ui.form .fields.error_true_true .field input[type=tel], .ui.form .field.error textarea, .ui.form .field.error input[type=text], .ui.form .field.error input[type=email], .ui.form .field.error input[type=date], .ui.form .field.error input[type=password], .ui.form .field.error input[type=number], .ui.form .field.error input[type=url], .ui.form .field.error input[type=tel] {
+  background-color: snow !important;
+  border-color: #E7BEBE !important;
+  border-left: 0 !important;
+  color: #D95C5C !important;;
+  padding-left: 1.2em !important;;
+  border-bottom-left-radius: 0 !important;;
+  border-top-left-radius: 0 !important;;
+  -webkit-box-shadow: .3em 0 0 0 #D95C5C inset !important;;
+  box-shadow: .3em 0 0 0 #D95C5C inset !important;
+}
+
+
+.ui.form .ng-invalid.ng-dirty{
+  background-color: snow !important;
+  border-color: #E7BEBE !important;
+  border-left: 0 !important;
+  color: #D95C5C !important;;
+  padding-left: 1.2em !important;;
+  border-bottom-left-radius: 0 !important;;
+  border-top-left-radius: 0 !important;;
+  -webkit-box-shadow: .3em 0 0 0 #D95C5C inset !important;;
+  box-shadow: .3em 0 0 0 #D95C5C inset !important;
+}
+
+
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  transform: translate(-300px, 0) scale(4);
+  font-size: 23px;
+  direction: ltr;
+  cursor: pointer;
+}
+.fileupload-buttonbar .btn,
+.fileupload-buttonbar .toggle {
+  margin-bottom: 5px;
+}

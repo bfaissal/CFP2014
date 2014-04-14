@@ -42,7 +42,7 @@
                                 <label>Language</label>
                                 <div class="ui left labeled icon input">
                                     <select ng-model="selectedTalk.language.value" ng-required="true" ng-change="updateValue(selectedTalk.language,'lang')">
-                                        <option>...</option>
+                                        <option value="">...</option>
                                         <option ng-repeat="lang in config.languages | orderBy:predicateList:reverse" value="{{lang.value}}">
                                             {{lang.label}}</option>
                                     </select>
@@ -55,7 +55,7 @@
                                 <label>Session type</label>
                                 <div class="ui left labeled icon input">
                                     <select ng-model="selectedTalk.type.value" ng-required="true" ng-change="updateValue(selectedTalk.type,'type')">
-                                        <option>...</option>
+                                        <option value="">...</option>
                                         <option ng-repeat="lang in config.sessionTypes | orderBy:predicateList:reverse " value="{{lang.value}}">
                                             {{lang.label}}</option>
                                     </select>
@@ -68,7 +68,7 @@
                                 <label>Session track</label>
                                 <div class="ui left labeled icon input">
                                     <select ng-model="selectedTalk.track.value" ng-required="true" ng-change="updateValue(selectedTalk.track,'track')">
-                                        <option>...</option>
+                                        <option value="">...</option>
                                         <option ng-repeat="lang in config.tracks | orderBy:predicateList:reverse " value="{{lang.value}}">
                                             {{lang.label}}</option>
                                     </select>
@@ -81,7 +81,7 @@
                                 <label>Audience experience</label>
                                 <div class="ui left labeled icon input">
                                     <select ng-model="selectedTalk.experience.value" ng-required="true" ng-change="updateValue(selectedTalk.experience,'exp')">
-                                        <option>...</option>
+                                        <option value="">...</option>
                                         <option ng-repeat="lang in config.audienceExperiences | orderBy:predicateList:reverse " value="{{lang.value}}">
                                             {{lang.label}}</option>
                                     </select>
@@ -103,7 +103,7 @@
                                     </div>
                                     <div ng-if="speaker.lname != ''">
                                         <div class="extra images">
-                                            <img style="height: 50px" src="/tmpImages/{{speaker.image}}">
+                                            <img style="height: 50px" src="{{speaker.image}}" />
                                             {{speaker.fname}}, {{speaker.lname}}
                                             <button class="ui small icon red button" ng-click="deleteSpeaker($index)"><i class="ui remove icon"></i></button>
                                         </div>

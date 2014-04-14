@@ -1,6 +1,7 @@
 package controllers
 
 
+import _root_.util.{MailUtil, CFPUtil}
 import play.api._
 import play.api.mvc._
 import play.modules.reactivemongo.MongoController
@@ -19,7 +20,7 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 import play.modules.reactivemongo._
 import play.modules.reactivemongo.json._
 import reactivemongo.api.Cursor
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.bson.{BSONInteger, BSONObjectID}
 import play.api.libs.ws.WS
 import play.api.libs.iteratee.Iteratee
 import scala.Array
@@ -33,6 +34,7 @@ object Application extends Controller with MongoController {
   def config: JSONCollection = db.collection[JSONCollection]("config")
 
   val generateId = (__ \ '_id \ '$oid).json.put( JsString(BSONObjectID.generate.stringify) )
+  val generatActivationCode = __.json.update((__ \ 'activationCode).json.put( JsString(CFPUtil.randomString()) ))
 
 
   def index() = Action {
@@ -58,15 +60,41 @@ object Application extends Controller with MongoController {
     implicit request => {
       request.body.asJson.map {
         json => {
-          collection.insert(json).map(_ => Ok(Messages("registration.creationsuccess.message", json \ "email")))
+          var userJson = json.transform(generatActivationCode).get
+          collection.insert(userJson).map(_ => {
+            val messageBody = Messages("registration.email.body", (json \ "fname").as[String], (json \ "_id").as[String], (userJson \ "activationCode").as[String])
+            MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
+              messageBody,
+              (userJson \ "fname").as[String])
+            Ok(Messages("registration.creationsuccess.message", json \ "email"))})
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
   }
+  def activateAccount(email:String,activationCode:String) = Action.async{
 
+    collection.update(
+        Json.obj(("_id" -> email)
+          ,("activationCode" -> activationCode)
+        )
+      , Json.obj("$set"-> Json.obj("actif"->1))
+      )
+      .map(lastError => {
+      lastError.get("n").map{ value =>
+        val linesUpdated = value match {
+          case linesUpdate:BSONInteger => linesUpdate.value
+          case _ => 0;
+        }
+        if(linesUpdated > 0) { Ok(views.html.login("JMaghreb"))}
+          else{
+            Ok("Invalid activation code ! ")
+          }
+      }.get
+    })
+  }
   val bodyParser = BodyParser(rh => Iteratee.fold[Array[Byte], Array[Byte]](Array[Byte]())((c,a) => c ++ a ).map(Right(_)) )
   val xbodyParser = BodyParser(rh => Iteratee.foldM[Array[Byte], Array[Byte]](Array[Byte]())((c, a) => {
-    println("uploading ... + " + c); Promise.timeout({
+     Promise.timeout({
       c ++ a
     }, 300)
   }).map(e => Right(e)))
@@ -100,7 +128,7 @@ object Application extends Controller with MongoController {
 
 
   def login(email: String, password: String) = Action.async {
-    val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email), ("password" -> password))).cursor[JsObject]
+    val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email), ("password" -> password),("actif" -> 1))).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
         val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
@@ -139,8 +167,6 @@ object Application extends Controller with MongoController {
       request.body.asJson.flatMap {
         json => {
           session.get("user").map(connectedUser => {
-            println("conncus "+connectedUser)
-            println("json "+json)
             collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")),json).map(_ => Ok(Messages("registration.save.message")))
           })
         }
