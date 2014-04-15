@@ -208,7 +208,7 @@ object Application extends Controller with MongoController {
                 val addMongoIdAndDate: Reads[JsObject] = __.json.update( (generateId and generateCreated).reduce )
                 val res = json.transform( addMongoIdAndDate  andThen (__ \ 'loading).json.prune ).get
                 talks.insert(res ++ Json.obj(("speaker" -> userJson.as[JsObject]))).map(lastError => {
-                  resOk(Messages("talk.creationsuccess.message", json \ "email"),res)
+                  resOk(Messages("talk.creationsuccess.message"),res)
                 })
               }
               // edit
@@ -216,9 +216,8 @@ object Application extends Controller with MongoController {
                 val query = Json.obj(("_id" -> value), ("speaker._id" -> userJson \ "_id"), ("status" -> 1))
                 val generateUpdated = (__ \ 'updated \ '$date).json.put( JsNumber((new java.util.Date).getTime) )
                 val res = json.transform(__.json.update(generateUpdated) andThen (__ \ '_id).json.prune andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
-                println("res.get = "+res.get)
                 talks.update(query, Json.obj(("$set" -> res.get))).map(lastError =>
-                  Ok(Messages("registration.creationsuccess.message", json \ "email")))
+                  Ok(Messages("talk.creationsuccess.message")))
               }
 
             }
