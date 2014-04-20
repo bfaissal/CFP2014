@@ -25,6 +25,8 @@ import play.api.libs.ws.WS
 import play.api.libs.iteratee.Iteratee
 import scala.Array
 import play.api.libs.ws.WS.WSRequestHolder
+import scala.util.Try
+import reactivemongo.core.errors.DatabaseException
 
 
 object Application extends Controller with MongoController {
@@ -55,18 +57,32 @@ object Application extends Controller with MongoController {
   def logout = Action {
     Ok(views.html.login("JMaghreb")).withNewSession
   }
+  def tesTry = Action {
+    val atry = Try({
+      1+1
+    })
 
+    Ok("");
+  }
   def register = Action.async {
     implicit request => {
       request.body.asJson.map {
         json => {
-          var userJson = json.transform(generatActivationCode).get
+
+          val userJson = json.transform(generatActivationCode).get
           collection.insert(userJson).map(_ => {
             val messageBody = Messages("registration.email.body", (json \ "fname").as[String], (json \ "_id").as[String], (userJson \ "activationCode").as[String])
             MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
               messageBody,
               (userJson \ "fname").as[String])
-            Ok(Messages("registration.creationsuccess.message", json \ "email"))})
+            Ok(Messages("registration.creationsuccess.message", json \ "email"))}
+          ).recover{
+            case e:DatabaseException => {e.code match {
+              case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
+              case _ => BadRequest(Messages("globals.serverInternalError.message"))
+            }}
+          }
+
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }

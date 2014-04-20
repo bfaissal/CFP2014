@@ -5,3 +5,4 @@ registration.email.body=Hi {0},<p>Your account have been created successefully.<
 registration.email.subject=Account created
 passwordreset.email.body=Hi, <p>Click the link bellow to reset your password:</p><p><a href="http://cfp.jmaghreb.io/activateAccount/{0}/{1}">http://cfp.jmaghreb.io/activateAccount/{0}/{1}</a></p><p>Regards.</p>
 passwordreset.email.subject=Password Reset Instructions
+globals.emailexists.message =This email already exists, please try another email address
