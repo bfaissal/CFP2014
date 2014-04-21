@@ -49,7 +49,7 @@ jmaghreb.controller('MainCtrl', function ($scope,$rootScope, $http) {
         if(disabled)
             return "disabled";
         else
-            return "";
+            return "n";
     }
 })
 jmaghreb.controller('RegistrationCtrl', function ($scope,$rootScope, $http,$timeout) {
