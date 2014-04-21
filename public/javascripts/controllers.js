@@ -63,7 +63,7 @@ jmaghreb.controller('RegistrationCtrl', function ($scope,$rootScope, $http,$time
         }).success(function (data) {
                 $scope.disableSave = false;
                 $rootScope.saveSuccess = true;
-                //$rootScope.loginShow = true;
+                $rootScope.loginShow = true;
                 $scope.register = {};
                 $scope.registrationForm.$setPristine();
                 $timeout(function(){$rootScope.saveSuccess = false;},3000)
