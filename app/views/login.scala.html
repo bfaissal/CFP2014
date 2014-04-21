@@ -39,6 +39,12 @@
                                 Register</div>
                         </div>
                     </div>
+                    <div class="ui success message show-hide-animation" ng-show="saveSuccess" style="position: fixed;top: 100px;width: 50%;" ng-cloak>
+                        <i class="close icon" ng-click="saveSuccess = false"></i>
+                        <div class="header">
+                            Saved successfully. An email was sent to you email, please follow the instructions on it to activate your account.
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -123,12 +129,7 @@
                                 Cancel</button>
                         </div>
                     </div>
-                    <div class="ui success message show-hide-animation" ng-show="saveSuccess" style="position: fixed;top: 100px;width: 50%;" ng-cloak>
-                        <i class="close icon" ng-click="saveSuccess = false"></i>
-                        <div class="header">
-                            Saved successfully.
-                        </div>
-                    </div>
+
                 </div>
             </form>
         </div>

@@ -1,11 +1,9 @@
 package controllers
 
 
-import _root_.util.{MailUtil, CFPUtil}
+import _root_.util._
 import play.api._
 import play.api.mvc._
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.concurrent.Promise
 import scala.concurrent.Future
@@ -24,9 +22,14 @@ import reactivemongo.bson.{BSONInteger, BSONObjectID}
 import play.api.libs.ws.WS
 import play.api.libs.iteratee.Iteratee
 import scala.Array
-import play.api.libs.ws.WS.WSRequestHolder
-import scala.util.Try
 import reactivemongo.core.errors.DatabaseException
+import play.modules.reactivemongo.json.collection.JSONCollection
+import play.api.libs.json.JsString
+import scala.Some
+import play.api.libs.json.JsNumber
+import reactivemongo.bson.BSONInteger
+import play.api.libs.ws.WS.WSRequestHolder
+import play.api.libs.json.JsObject
 
 
 object Application extends Controller with MongoController {
@@ -50,26 +53,20 @@ object Application extends Controller with MongoController {
   def profile = Action {
     Ok(views.html.profile("JMaghreb"))
   }
-  def admin() = Action {
+  def admin() = AdminAction {
     Ok(views.html.admin("JMaghreb"))
   }
 
   def logout = Action {
     Ok(views.html.login("JMaghreb")).withNewSession
   }
-  def tesTry = Action {
-    val atry = Try({
-      1+1
-    })
 
-    Ok("");
-  }
   def register = Action.async {
     implicit request => {
       request.body.asJson.map {
         json => {
 
-          val userJson = json.transform(generatActivationCode).get
+          val userJson = json.transform(generatActivationCode andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
           collection.insert(userJson).map(_ => {
             val messageBody = Messages("registration.email.body", (json \ "fname").as[String], (json \ "_id").as[String], (userJson \ "activationCode").as[String])
             MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
@@ -183,7 +180,8 @@ object Application extends Controller with MongoController {
       request.body.asJson.flatMap {
         json => {
           session.get("user").map(connectedUser => {
-            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")),json).map(_ => Ok(Messages("registration.save.message")))
+            val newJson = json.transform((__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
+            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")),newJson).map(_ => Ok(Messages("registration.save.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
@@ -253,7 +251,7 @@ object Application extends Controller with MongoController {
     })
   }
 
-  def saveConfig = Action.async {
+  def saveConfig = AdminAction.async {
     implicit request => {
       request.body.asJson.map {
         json => {

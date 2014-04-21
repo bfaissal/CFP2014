@@ -37,16 +37,22 @@ jmaghreb.controller('LoginCtrl', function ($scope, $http) {
 })
 
 
-jmaghreb.controller('MainCtrl', function ($scope, $http) {
-    $scope.loginShow = true;
+jmaghreb.controller('MainCtrl', function ($scope,$rootScope, $http) {
+    $rootScope.loginShow = true;
     $scope.goRegister = function () {
-        $scope.loginShow = false;
+        $rootScope.loginShow = false;
     }
     $scope.cancel = function () {
-        $scope.loginShow = true;
+        $rootScope.loginShow = true;
+    }
+    $rootScope.disabled = function(disabled){
+        if(disabled)
+            return "disabled";
+        else
+            return "";
     }
 })
-jmaghreb.controller('RegistrationCtrl', function ($scope, $http,$timeout) {
+jmaghreb.controller('RegistrationCtrl', function ($scope,$rootScope, $http,$timeout) {
 
     $scope.register = {};
 
@@ -54,26 +60,17 @@ jmaghreb.controller('RegistrationCtrl', function ($scope, $http,$timeout) {
         $http.post("/register", $scope.register).error(function (error) {
             alert(error)
         }).success(function (data) {
-                $scope.saveSuccess = true;
-                $timeout(function(){$scope.saveSuccess = false;},3000)
+                $rootScope.saveSuccess = true;
+                $rootScope.loginShow = true;
+                $timeout(function(){$rootScope.saveSuccess = false;$scope.register = {};$scope.registrationForm.$setPristine();},3000)
             })
     }
-    $scope.disabled = function(disabled){
-        if(disabled)
-            return "disabled";
-        else
-            return "";
-    }
+
 })
 
 jmaghreb.controller('ProfileCtrl', function ($scope, $http, $timeout) {
     $scope.saveSuccess = false;
-    $scope.disabled = function(disabled){
-        if(disabled)
-            return "disabled";
-        else
-            return "";
-    }
+
     $scope.initProfile = function(){
         $http.get("/connectedUser").success(function (data) {
             $scope.register = data
