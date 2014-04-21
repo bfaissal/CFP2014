@@ -123,8 +123,7 @@
                     -->
                     <div style="width : 100 % ; text-align : center">
                         <div class="ui buttons center">
-                            <button ng-class="disabled(registrationForm.$invalid)" ng-disabled="registrationForm.$invalid || disableSave" class="ui blue button" ng-click="save()">Submit</button>
-
+                            <button ng-class="disabled(registrationForm.$invalid || disableSave)" ng-disabled="registrationForm.$invalid || disableSave" class="ui blue button" ng-click="save()">Submit</button>
                             <button class="ui submit button" ng-click="cancel()">
                                 Cancel</button>
                         </div>

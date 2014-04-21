@@ -30,6 +30,7 @@ import play.api.libs.json.JsNumber
 import reactivemongo.bson.BSONInteger
 import play.api.libs.ws.WS.WSRequestHolder
 import play.api.libs.json.JsObject
+import scala.concurrent.duration._
 
 
 object Application extends Controller with MongoController {
@@ -72,7 +73,8 @@ object Application extends Controller with MongoController {
             MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
               messageBody,
               (userJson \ "fname").as[String])
-            Ok(Messages("registration.creationsuccess.message", json \ "email"))}
+              Ok(Messages("registration.creationsuccess.message", json \ "_id"))
+          }
           ).recover{
             case e:DatabaseException => {e.code match {
               case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
@@ -206,7 +208,6 @@ object Application extends Controller with MongoController {
     }
   }
   def resOk(message:String, data:JsValue) = {
-    println("")
     Ok(Json.obj("message" -> message)++Json.obj("data"-> data))
   }
   def editTalk = Action.async {
