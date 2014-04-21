@@ -206,6 +206,7 @@ object Application extends Controller with MongoController {
     }
   }
   def resOk(message:String, data:JsValue) = {
+    println("")
     Ok(Json.obj("message" -> message)++Json.obj("data"-> data))
   }
   def editTalk = Action.async {
