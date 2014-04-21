@@ -52,7 +52,7 @@ object Application extends Controller with MongoController {
     Ok(views.html.profile("JMaghreb"))
   }
   def admin() = AdminAction {
-    Ok(views.html.admin("JMaghreb"))
+    Ok(views.html.admin("JMaghreb")).withCookies()
   }
 
   def logout = Action {
