@@ -13,10 +13,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import java.io.{FileInputStream, FileOutputStream, FileNotFoundException, File}
-
-import play.modules.reactivemongo.json.collection.JSONCollection
 import play.modules.reactivemongo._
-import play.modules.reactivemongo.json._
 import reactivemongo.api.Cursor
 import reactivemongo.bson.{BSONInteger, BSONObjectID}
 import play.api.libs.ws.WS
