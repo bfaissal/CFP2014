@@ -105,21 +105,23 @@ object Application extends Controller with MongoController {
     })
   }
   val bodyParser = BodyParser(rh => Iteratee.fold[Array[Byte], Array[Byte]](Array[Byte]())((c,a) => c ++ a ).map(Right(_)) )
-  val xbodyParser = BodyParser(rh => Iteratee.foldM[Array[Byte], Array[Byte]](Array[Byte]())((c, a) => {
-     Promise.timeout({
-      c ++ a
-    }, 300)
-  }).map(e => Right(e)))
 
-  def upload = Action.async(bodyParser) {
+  def upload = Action.async(parse.maxLength(maxLength = 1024000, bodyParser)) {
     rq => {
-      val fileName = ""+System.nanoTime()
-      val url = WS.url(Play.current.configuration.getString("upload.server").get+"uploadPictures.php?name="+fileName)
-      rq.headers.keys.foldLeft[WSRequestHolder](url)((h, a) => h.withHeaders(a -> {
-        rq.headers.get(a).get
-      })).post(rq.body).map(r => {
-        Ok(Json.obj("files" -> Json.arr(Json.obj("name" -> (Play.current.configuration.getString("upload.server").get+"cfp/"+fileName+".png")))))
-      })
+      rq.body match {
+        case Right(multiPartBody) => {
+
+          val fileName = "" + System.nanoTime()
+          val url = WS.url(Play.current.configuration.getString("upload.server").get + "uploadPictures.php?name=" + fileName)
+          rq.headers.keys.foldLeft[WSRequestHolder](url)((h, a) => h.withHeaders(a -> {
+            rq.headers.get(a).get
+          })).post(multiPartBody).map(r => {
+            Ok(Json.obj("files" -> Json.arr(Json.obj("name" -> (Play.current.configuration.getString("upload.server").get + "cfp/" + fileName + ".png")))))
+          })
+        }
+        case Left(multiPartBody) => Future.successful(BadRequest("Max size exceeded"))
+        case _ => Future.successful(BadRequest("Other"))
+      }
     }
   }
 
