@@ -63,7 +63,6 @@ object Application extends Controller with MongoController {
     implicit request => {
       request.body.asJson.map {
         json => {
-
           val userJson = json.transform(generatActivationCode andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
           collection.insert(userJson).map(_ => {
             val messageBody = Messages("registration.email.body", (json \ "fname").as[String], (json \ "_id").as[String], (userJson \ "activationCode").as[String])
