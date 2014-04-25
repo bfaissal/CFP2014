@@ -15,23 +15,31 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 
 object LoggingFilter extends Filter {
-  val timeout: Long = 3600//000
+  val timeout: Long = 3600
+  //000
   val sessionVariable = "lastAccessedTime"
 
   def apply(nextFilter: (RequestHeader) => Future[SimpleResult])
            (requestHeader: RequestHeader): Future[SimpleResult] = {
     val startTime = System.currentTimeMillis
-
-    nextFilter(requestHeader).map {
-      result =>
-        if ((System.currentTimeMillis() - requestHeader.session.get(sessionVariable).getOrElse(System.currentTimeMillis().toString).toLong) > timeout){
-            result//.withNewSession
-        }
-          else {
-            result//.withSession(requestHeader.session + (sessionVariable -> ("" + System.currentTimeMillis())))
-        }
-        }
+    if (!requestHeader.uri.startsWith("/login/") && (System.currentTimeMillis() - requestHeader.session.get(sessionVariable).getOrElse(System.currentTimeMillis().toString).toLong) > timeout) {
+      println("++++++******----------------------------------------------------------------------")
+      println(" : uri = "+requestHeader.uri)
+      nextFilter(requestHeader).map {
+        _.withSession((sessionVariable -> ("" + System.currentTimeMillis())))
+      }
     }
+    else {
+      nextFilter(requestHeader).map {
+
+        result =>{
+          println("connected user = "+requestHeader.session.get("user"))
+
+          result.withSession(requestHeader.session + (sessionVariable -> ("" + System.currentTimeMillis())))
+        }
+      }
+    }
+  }
 }
 
 

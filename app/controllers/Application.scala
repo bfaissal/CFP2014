@@ -144,6 +144,7 @@ object Application extends Controller with MongoController {
     val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email), ("password" -> password),("actif" -> 1))).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
+        println("Im login in")
         val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
         Ok("ok").withSession(("user", sessionUser.get.toString()))
       }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
