@@ -22,20 +22,18 @@ object LoggingFilter extends Filter {
   def apply(nextFilter: (RequestHeader) => Future[SimpleResult])
            (requestHeader: RequestHeader): Future[SimpleResult] = {
     val startTime = System.currentTimeMillis
-    if (!requestHeader.uri.startsWith("/login/") && (System.currentTimeMillis() - requestHeader.session.get(sessionVariable).getOrElse(System.currentTimeMillis().toString).toLong) > timeout) {
-      println("++++++******----------------------------------------------------------------------")
-      println(" : uri = "+requestHeader.uri)
-      nextFilter(requestHeader).map {
-        _.withSession((sessionVariable -> ("" + System.currentTimeMillis())))
-      }
+    if (requestHeader.uri.startsWith("/login/") || requestHeader.uri.startsWith("/logout")
+      || requestHeader.uri.equals("/") || requestHeader.uri.startsWith("/assets/")) {
+      nextFilter(requestHeader)
     }
     else {
-      nextFilter(requestHeader).map {
+      if ((System.currentTimeMillis() - requestHeader.session.get(sessionVariable).getOrElse(System.currentTimeMillis().toString).toLong) > timeout) {
 
-        result =>{
-          println("connected user = "+requestHeader.session.get("user"))
-
-          result.withSession(requestHeader.session + (sessionVariable -> ("" + System.currentTimeMillis())))
+        Future.successful(Results.TemporaryRedirect("/logout"))//Results.Redirect("/logout",200))
+      }
+      else {
+        nextFilter(requestHeader).map {
+          _.withSession(requestHeader.session + (sessionVariable -> ("" + System.currentTimeMillis())))
         }
       }
     }
