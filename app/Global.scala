@@ -27,13 +27,12 @@ object LoggingFilter extends Filter {
       nextFilter(requestHeader)
     }
     else {
-      if ((System.currentTimeMillis() - requestHeader.session.get(sessionVariable).getOrElse(System.currentTimeMillis().toString).toLong) > timeout) {
-
-        Future.successful(Results.TemporaryRedirect("/logout"))//Results.Redirect("/logout",200))
+      if ((startTime - requestHeader.session.get(sessionVariable).getOrElse(startTime.toString).toLong) > timeout) {
+        Future.successful(Results.TemporaryRedirect("/logout"))
       }
       else {
         nextFilter(requestHeader).map {
-          _.withSession(requestHeader.session + (sessionVariable -> ("" + System.currentTimeMillis())))
+          _.withSession(requestHeader.session + (sessionVariable -> ("" + startTime)))
         }
       }
     }
