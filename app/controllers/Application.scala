@@ -45,7 +45,7 @@ object Application extends Controller with MongoController {
   }
 
   def loginPage = Action {
-    Ok(views.html.login("JMaghreb")).withCookies(Cookie("test","test"))
+    Ok(views.html.login("JMaghreb")).withCookies(List(Cookie("test","test"),Cookie("mtest","tmmmest")):_*).withHeaders(("3ajibe","hona"))
   }
 
   def profile = Action {
