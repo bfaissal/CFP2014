@@ -150,7 +150,7 @@ object Application extends Controller with MongoController {
         cursor.headOption.map(value => {
           value.map(content => {
             val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
-            Ok("ok").withSession(("user", sessionUser.get.toString()))
+            Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
           }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
         })
       }

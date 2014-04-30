@@ -21,6 +21,7 @@ object LoggingFilter extends Filter {
 
   def apply(nextFilter: (RequestHeader) => Future[SimpleResult])
            (requestHeader: RequestHeader): Future[SimpleResult] = {
+    /*
     val startTime = System.currentTimeMillis
     if (requestHeader.uri.startsWith("/login/") || requestHeader.uri.startsWith("/logout")
       || requestHeader.uri.equals("/") || requestHeader.uri.startsWith("/assets/")) {
@@ -32,10 +33,12 @@ object LoggingFilter extends Filter {
       }
       else {
         nextFilter(requestHeader).map {
-          _.withSession(requestHeader.session + (sessionVariable -> ("" + startTime)))
+          _//.withSession(requestHeader.session + (sessionVariable -> ("" + startTime)))
         }
       }
     }
+    */
+    nextFilter(requestHeader)
   }
 }
 

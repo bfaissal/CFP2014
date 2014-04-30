@@ -25,8 +25,13 @@ jmaghreb.controller('LoginCtrl', function ($scope, $http) {
     $scope.doLogin = function () {
         $scope.showMessages = "hidden";
         try{
-        $http.post("/login",$scope.login).success(function () {
-            window.location.href = "/proposals"
+        $http.post("/login",$scope.login).success(function (data) {
+            if(data.admin == true){
+                window.location.href = "/admin"
+            }
+            else{
+                window.location.href = "/proposals"
+            }
         }).error(function(){
                 $scope.showMessages = "shown";
             })

@@ -21,7 +21,7 @@ object AdminAction extends ActionBuilder[Request] {
     Logger.info("Calling action")
     request.session.get("user") match {
       case Some(x) => {(Json.parse(x)\ "admin").toString() +" - "+println((Json.parse(x)\ "admin").toString().equals("true") );if((Json.parse(x)\ "admin").toString().equals("true") ) block(request) else Future.successful(Application.Unauthorized(":x"))}
-      case _ => { Future.successful(Application.Unauthorized(":x"))};
+      case x => { println("admin"+x);Future.successful(Application.Unauthorized(":x"))};
     }
 
   }
