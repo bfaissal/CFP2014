@@ -25,8 +25,8 @@ jmaghreb.controller('LoginCtrl', function ($scope, $http) {
     $scope.doLogin = function () {
         $scope.showMessages = "hidden";
         try{
-        $http.post("/login/" + $scope.login._id + "/" + $scope.login.password).success(function () {
-            window.location.href = "/cfp"
+        $http.post("/login",$scope.login).success(function () {
+            window.location.href = "/proposals"
         }).error(function(){
                 $scope.showMessages = "shown";
             })
@@ -44,6 +44,7 @@ jmaghreb.controller('MainCtrl', function ($scope,$rootScope, $http) {
     }
     $scope.cancel = function () {
         $rootScope.loginShow = true;
+        $rootScope.register = {};
     }
     $rootScope.disabled = function(disabled){
         if(disabled)
@@ -54,7 +55,7 @@ jmaghreb.controller('MainCtrl', function ($scope,$rootScope, $http) {
 })
 jmaghreb.controller('RegistrationCtrl', function ($scope,$rootScope, $http,$timeout) {
 
-    $scope.register = {};
+    $rootScope.register = {};
     $scope.disableSave = false;
     $scope.save = function () {
         $scope.disableSave = true;
@@ -64,7 +65,7 @@ jmaghreb.controller('RegistrationCtrl', function ($scope,$rootScope, $http,$time
                 $scope.disableSave = false;
                 $rootScope.saveSuccess = true;
                 $rootScope.loginShow = true;
-                $scope.register = {};
+                $rootScope.register = {};
                 $scope.registrationForm.$setPristine();
                 $timeout(function(){$rootScope.saveSuccess = false;},6000)
             })

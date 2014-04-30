@@ -21,7 +21,7 @@ object MailUtil {
           "&to="+java.net.URLEncoder.encode(to,"UTF-8")+
           "&toname="+java.net.URLEncoder.encode(fname ,"UTF-8")+
           "&subject="+ java.net.URLEncoder.encode(subject,"UTF-8")+
-          "&from=info@moroccojug.org" +
+          "&from=info@jmaghreb.io" +
           "&html="+java.net.URLEncoder.encode(body,"UTF-8")).get
         }
         catch {

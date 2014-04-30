@@ -15,7 +15,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 
 object LoggingFilter extends Filter {
-  val timeout: Long = 3600
+  val timeout: Long = 720000
   //000
   val sessionVariable = "lastAccessedTime"
 

@@ -83,7 +83,7 @@ object Application extends Controller with MongoController {
     }
   }
   def activateAccount(email:String,activationCode:String) = Action.async{
-
+    implicit request => {
     collection.update(
         Json.obj(("_id" -> email)
           ,("activationCode" -> activationCode)
@@ -96,12 +96,15 @@ object Application extends Controller with MongoController {
           case linesUpdate:BSONInteger => linesUpdate.value
           case _ => 0;
         }
-        if(linesUpdated > 0) { Ok(views.html.login("JMaghreb"))}
+        if(linesUpdated > 0) {
+          Ok(views.html.login("JMaghreb")).flashing(("activation" -> "true"))
+        }
           else{
             Ok("Invalid activation code ! ")
           }
       }.get
     })
+    }
   }
   val bodyParser = BodyParser(rh => Iteratee.fold[Array[Byte], Array[Byte]](Array[Byte]())((c,a) => c ++ a ).map(Right(_)) )
 
@@ -140,15 +143,19 @@ object Application extends Controller with MongoController {
   }
 
 
-  def login(email: String, password: String) = Action.async {
-    val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email), ("password" -> password),("actif" -> 1))).cursor[JsObject]
-    cursor.headOption.map(value => {
-      value.map(content => {
-        println("Im login in")
-        val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
-        Ok("ok").withSession(("user", sessionUser.get.toString()))
-      }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
-    })
+  def login = Action.async {
+    implicit request => {
+      request.body.asJson.map { json => {
+        val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> json \"_id"), ("password" -> json \"password"), ("actif" -> 1))).cursor[JsObject]
+        cursor.headOption.map(value => {
+          value.map(content => {
+            val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
+            Ok("ok").withSession(("user", sessionUser.get.toString()))
+          }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
+        })
+      }
+      }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+    }
   }
 
   def speaker(email: String) = Action.async {

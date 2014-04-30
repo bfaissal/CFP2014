@@ -7,8 +7,8 @@ GET         /                                              controllers.Applicati
 POST        /register                                      controllers.Application.register
 POST        /upload                                        controllers.Application.upload
 GET         /deleteImage/:id/:action                       controllers.Application.deleteImages(id :String,action :Boolean)
-POST        /login/:email/:password                        controllers.Application.login(email :String,password :String)
-GET         /cfp                                           controllers.Application.index
+POST        /login                                         controllers.Application.login
+GET         /proposals                                     controllers.Application.index
 GET         /talks                                         controllers.Application.talksList
 POST        /editTalk                                      controllers.Application.editTalk
 GET         /logout                                        controllers.Application.logout

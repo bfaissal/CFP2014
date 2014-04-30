@@ -8,8 +8,16 @@
             <div class="column" id="loginBox">
 
                 <div class="ui form segment">
+                    <!--
+                    <div class="ui success message show-hide-animation"  style="position: fixed;top: 100px;width: 50%;" ng-cloak>
+                        <i class="close icon" ng-click="saveSuccess = false"></i>
+                        <div class="header">
+                        @Messages("registrration.activation.success.message")
+                        </div>
+                    </div>
+            -->
                     <div class="ui error message" ng-class="showMessages">
-                        ++Incorrect username and/or password
+                        Incorrect username and/or password
                     </div>
                     <div class="field">
                         <label>Email</label>
@@ -42,7 +50,7 @@
                     <div class="ui success message show-hide-animation" ng-show="saveSuccess" style="position: fixed;top: 100px;width: 50%;" ng-cloak>
                         <i class="close icon" ng-click="saveSuccess = false"></i>
                         <div class="header">
-                            Saved successfully. An email was sent to you email, please follow the instructions on it to activate your account.
+                            @Messages("registrration.success.message")
                         </div>
                     </div>
                 </div>
