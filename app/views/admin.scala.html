@@ -198,7 +198,7 @@
                     <tbody>
                         <tr ng-repeat="item in config.reviewers | orderBy:predicate:reverse track by $index ">
                             <td><input placeholder="Email" type="text" ng-model="item.email"></td>
-                            <td><button class="ui small icon red button" ng-click="activateRev(config.reviewers,item,$index)"><i class="ui remove icon"></i></button></td>
+                            <td><button class="ui small icon red button" ng-click="activateRev(config.reviewers,item,$index)"><i class="ui email icon"></i></button></td>
                             <td><button class="ui small icon red button" ng-click="delete(config.reviewers,item,$index)"><i class="ui remove icon"></i></button></td>
 
                         </tr>

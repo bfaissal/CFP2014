@@ -264,7 +264,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
                 $timeout(function(){$scope.saveSuccess = false;},3000)
             })
     }
-    $scope.delete = function (list,item, index) {
+    $scope.activateRev = function (list,item, index) {
         if (confirm("Are you sure you want to send and email to this reviewer ?")) {
             for ( a in list){
                 if(list[a].label == item.label){
@@ -274,7 +274,9 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
             $http.post("/createRev/"+item.email).success(function(){
                 item.emailSent= true;
                 $scope.save()
-            })
+            }).error(function(data){
+                    alert(data);
+                })
 
         }
     }
