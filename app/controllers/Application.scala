@@ -122,13 +122,15 @@ object Application extends Controller with MongoController {
   }
   def createReviewer(email:String) = Action.async {
     implicit request => {
-          val userJson = Json.obj(("_id"->email),("reviewer"->true))//.transform(generatActivationCode).get
-
+          val userJson = Json.obj(("_id"->email),("reviewer"->true)).transform(generatActivationCode).get
+           //println("feerrvvvvvvvvvvvvvvv")
             collection.insert(userJson).map(_ => {
             val messageBody = Messages("reviewers.activation.email.body", email, (userJson \ "activationCode").as[String])
+              //println("mesage bodduuuuuuuuuuuuuu "+userJson)
             MailUtil.send((userJson \ "_id").as[String], Messages("reviewers.activation.email.subject"),
               messageBody,
               "")
+              //println("mesage mechaaaaaaaaaaaaaaaa  ")
             Ok(Messages("registration.creationsuccess.message", userJson \ "_id"))
           }
           ).recover{
