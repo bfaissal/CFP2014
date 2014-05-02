@@ -104,7 +104,7 @@ jmaghreb.controller('RevProfileCtrl', function ($scope, $http, $timeout) {
     }
     $scope.initProfile();
     $scope.editProfile = function () {
-        $http.post("/saveProfile",$scope.register).success(function (data) {
+        $http.post("/saveReviewer",$scope.register).success(function (data) {
             $scope.saveSuccess = true;
             $timeout(function(){$scope.saveSuccess = false;},3000)
         })
