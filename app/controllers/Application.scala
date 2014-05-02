@@ -97,7 +97,6 @@ object Application extends Controller with MongoController {
           case _ => 0;
         }
         if(linesUpdated > 0) {
-          println("redirecting")
           Redirect("/",302)
         }
           else{
