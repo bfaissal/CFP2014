@@ -216,6 +216,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     })
     $scope.initLists = function () {
         if (!$scope.config.languages) $scope.config.languages = []
+        if (!$scope.config.confDays) $scope.config.confDays = []
         if (!$scope.config.rooms) $scope.config.rooms = []
         if (!$scope.config.sessionTypes) $scope.config.sessionTypes = []
         if (!$scope.config.tracks) $scope.config.tracks = []
@@ -226,6 +227,9 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         switch (type) {
             case 'lang':
                 $scope.config.languages.push({});
+                break;
+            case 'confDays':
+                $scope.config.confDays.push({});
                 break;
             case 'room':
                 $scope.config.rooms.push({});

@@ -106,6 +106,20 @@ object Application extends Controller with MongoController {
     })
     }
   }
+  def reviewerActivation(email:String,activationCode:String) = Action.async {
+    implicit request => {
+      request.body.asJson.map { json => {
+        val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email)
+          ,("activationCode" -> activationCode))).cursor[JsObject]
+        cursor.headOption.map(value => {
+          value.map(content => {
+            Redirect("/regReviwer",302).withSession(("user", content.toString()))
+          }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
+        })
+      }
+      }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+    }
+  }
   val bodyParser = BodyParser(rh => Iteratee.fold[Array[Byte], Array[Byte]](Array[Byte]())((c,a) => c ++ a ).map(Right(_)) )
 
   def upload = Action.async(parse.maxLength(maxLength = 1024000, bodyParser)) {
@@ -157,6 +171,8 @@ object Application extends Controller with MongoController {
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
   }
+
+
 
   def speaker(email: String) = Action.async {
     val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email))).cursor[JsObject]

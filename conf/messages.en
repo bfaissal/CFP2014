@@ -7,3 +7,4 @@ passwordreset.email.body=Hi, <p>Click the link bellow to reset your password:</p
 passwordreset.email.subject=Password Reset Instructions
 globals.emailexists.message =This email already exists, please try another email address
 registrration.activation.success.message="Your account was activated !"
+reviewers.activation.email.message="Hello,<p>You've been added to JMaghreb reviewers board, please complete your account creation at:</p><p><a href="{0}">{0}</a></p>"

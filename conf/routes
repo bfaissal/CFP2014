@@ -21,6 +21,7 @@ GET         /speaker/:mail                                 controllers.Applicati
 GET         /connectedUser                                 controllers.Application.connectedUser
 POST        /saveProfile                                   controllers.Application.saveProfile
 GET         /activateAccount/:email/:activationCode        controllers.Application.activateAccount(email:String,activationCode:String)
+GET         /revAct/:email/:activationCode        controllers.Application.reviewerActivation(email:String,activationCode:String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                  controllers.Assets.at(path="/public", file)
