@@ -14,13 +14,14 @@ POST        /editTalk                                      controllers.Applicati
 GET         /logout                                        controllers.Application.logout
 POST        /logout                                        controllers.Application.logout
 GET         /profile                                       controllers.Application.profile
+GET         /revProfile                                    controllers.Application.revProfile
 GET         /admin                                         controllers.Application.admin
 GET         /config                                        controllers.Application.getConfig
 POST        /saveConfig                                    controllers.Application.saveConfig
 GET         /speaker/:mail                                 controllers.Application.speaker(mail:String)
 GET         /connectedUser                                 controllers.Application.connectedUser
 POST        /saveProfile                                   controllers.Application.saveProfile
-POST        /saveReviewer                                   controllers.Application.saveProfile
+POST        /saveReviewer                                  controllers.Application.saveProfile
 GET         /activateAccount/:email/:activationCode        controllers.Application.activateAccount(email:String,activationCode:String)
 GET         /revAct/:email/:activationCode                 controllers.Application.reviewerActivation(email:String,activationCode:String)
 POST        /createRev/:mail                               controllers.Application.createReviewer(mail:String)
