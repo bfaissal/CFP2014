@@ -97,7 +97,8 @@ object Application extends Controller with MongoController {
           case _ => 0;
         }
         if(linesUpdated > 0) {
-          Ok(views.html.login("JMaghreb")).flashing(("activation" -> "true"))
+          println("redirecting")
+          Redirect("/",302)
         }
           else{
             Ok("Invalid activation code ! ")
