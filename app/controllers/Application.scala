@@ -241,6 +241,18 @@ object Application extends Controller with MongoController {
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
   }
+  def saveReviewer = ReviewAction.async {
+    implicit request => {
+      request.body.asJson.flatMap {
+        json => {
+          session.get("user").map(connectedUser => {
+            val newJson = json.transform((__ \ 'admin).json.prune).get
+            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), newJson).map(_ => Ok(Messages("registration.save.message")))
+          })
+        }
+      }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+    }
+  }
 
   def talksList() = Action.async {
     implicit request => {
