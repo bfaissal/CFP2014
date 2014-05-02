@@ -271,7 +271,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
                     index = a ;
                 }
             }
-            $http.post("/saveConfig", JSON.stringify($scope.config)).success(function(){
+            $http.post("/createRev/"+item.email).success(function(){
                 item.emailSent= true;
                 $scope.save()
             })
