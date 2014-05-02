@@ -1,0 +1,108 @@
+@(message: String)
+
+@main("JMaghreb Call For Paper") {
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+} {
+    <div class="ui fixed transparent main small menu" style="top: 0;left: 0" ng-controller="">
+        <a class="item" href="/proposals">
+            <i class="home icon"></i> Home
+        </a>
+        <a class="active item" href="/profile">
+            <i class="user icon"></i> Profile
+        </a>
+        <div class="right menu">
+            <div class="item">
+                <a class="ui teal button" href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div id="container" ng-app="jmaghreb" style="margin-top: 100px;" ng-cloak>
+        <form name="profileForm" id="profileForm" novalidate>
+            <div id="profileContainer" ng-controller="ProfileCtrl" ng-cloak>
+                <div class="ui form segment" id="registrationBox">
+                    <div class="two fields">
+                        <div class="field" ng-class="errorClass('fname')">
+                            <label>First Name</label>
+                            <div class="ui left labeled input">
+                                <input name="fname" ng-required="true" placeholder="First Name" type="text" ng-model="register.fname">
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field" ng-class="errorClass('fname')">
+                            <label>Last Name</label>
+                            <div class="ui left labeled input">
+                                <input name="lname" ng-required="true" placeholder="Last Name" type="text" ng-model="register.lname">
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field" ng-class="errorClass('email')">
+                        <label>Email</label>
+                        <div class="ui left labeled input">
+                            <b>{{register._id}}</b>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Twitter</label>
+                        <div class="ui left labeled icon input">
+                            <input placeholder="Your Twitter accounte" type="text" ng-model="register.twitter">
+                            <i class="twitter icon"></i>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Picture</label>
+                        <uploader id="pico" image="register.image" url="upload"></uploader>
+                    </div>
+
+
+                    <div class="field" ng-class="errorClass('password')">
+                        <label>Password</label>
+                        <div class="ui left labeled input">
+                            <input name="password" ng-required="true" type="password" ng-model="register.password">
+                            <div class="ui corner label">
+                                <i class="icon asterisk"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field" ng-class="errorClass('cpassword')">
+                        <label>Confirm Password</label>
+                        <div class="ui left labeled input">
+                            <input name="cpassword" ng-required="true" type="password" ng-model="register.cpassword">
+                            <div class="ui corner label">
+                                <i class="icon asterisk"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="width : 100 % ; text-align : center">
+                        <div class="ui buttons center">
+
+                            <button class="ui blue button" ng-class="disabled(profileForm.$invalid)" ng-disabled="profileForm.$invalid" ng-click="editProfile()">Save</button>
+
+                            <button class="ui submit button" ng-click="initProfile()">
+                                Cancel</button>
+                        </div>
+                    </div>
+                    <div class="ui success message show-hide-animation" ng-show="saveSuccess" style="position: fixed;top: 100px;width: 50%;" ng-cloak>
+                        <i class="close icon" ng-click="saveSuccess = false"></i>
+                        <div class="header">
+                            Saved successfully.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+
+
+}{
+        <script src="@routes.Assets.at("javascripts/jquery.ui.widget.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jquery.iframe-transport.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jquery.fileupload.js")" type="text/javascript"></script>
+    }

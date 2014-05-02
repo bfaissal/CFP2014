@@ -94,6 +94,22 @@ jmaghreb.controller('ProfileCtrl', function ($scope, $http, $timeout) {
         })
     }
 })
+jmaghreb.controller('RevProfileCtrl', function ($scope, $http, $timeout) {
+    $scope.saveSuccess = false;
+
+    $scope.initProfile = function(){
+        $http.get("/connectedUser").success(function (data) {
+            $scope.register = data
+        })
+    }
+    $scope.initProfile();
+    $scope.editProfile = function () {
+        $http.post("/saveProfile",$scope.register).success(function (data) {
+            $scope.saveSuccess = true;
+            $timeout(function(){$scope.saveSuccess = false;},3000)
+        })
+    }
+})
 
 jmaghreb.controller('talksCtrl', function ($scope, $http) {
     $scope.talks = {};
