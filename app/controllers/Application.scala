@@ -120,6 +120,25 @@ object Application extends Controller with MongoController {
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
   }
+  def createReviewer(email:String) = Action.async {
+    implicit request => {
+          val userJson = Json.obj(("_id"->email),("reviewer"->true)).transform(generatActivationCode).get
+
+            collection.insert(userJson).map(_ => {
+            val messageBody = Messages("reviewers.activation.email.body", (json \ "fname").as[String], (json \ "_id").as[String], (userJson \ "activationCode").as[String])
+            MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
+              messageBody,
+              (userJson \ "fname").as[String])
+            Ok(Messages("registration.creationsuccess.message", json \ "_id"))
+          }
+          ).recover{
+            case e:DatabaseException => {e.code match {
+              case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
+              case _ => BadRequest(Messages("globals.serverInternalError.message"))
+            }}
+          }
+    }
+  }
   val bodyParser = BodyParser(rh => Iteratee.fold[Array[Byte], Array[Byte]](Array[Byte]())((c,a) => c ++ a ).map(Right(_)) )
 
   def upload = Action.async(parse.maxLength(maxLength = 1024000, bodyParser)) {
