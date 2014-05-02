@@ -34,10 +34,11 @@ object Application extends Controller with MongoController {
   def collection: JSONCollection = db.collection[JSONCollection]("users")
 
   def talks: JSONCollection = db.collection[JSONCollection]("talks")
+
   def config: JSONCollection = db.collection[JSONCollection]("config")
 
-  val generateId = (__ \ '_id \ '$oid).json.put( JsString(BSONObjectID.generate.stringify) )
-  val generatActivationCode = __.json.update((__ \ 'activationCode).json.put( JsString(CFPUtil.randomString()) ))
+  val generateId = (__ \ '_id \ '$oid).json.put(JsString(BSONObjectID.generate.stringify))
+  val generatActivationCode = __.json.update((__ \ 'activationCode).json.put(JsString(CFPUtil.randomString())))
 
 
   def index() = Action {
@@ -45,12 +46,13 @@ object Application extends Controller with MongoController {
   }
 
   def loginPage = Action {
-    Ok(views.html.login("JMaghreb")).withCookies(List(Cookie("test","test"),Cookie("mtest","tmmmest")):_*).withHeaders(("3ajibe","hona"))
+    Ok(views.html.login("JMaghreb")).withCookies(List(Cookie("test", "test"), Cookie("mtest", "tmmmest")): _*).withHeaders(("3ajibe", "hona"))
   }
 
   def profile = Action {
     Ok(views.html.profile("JMaghreb"))
   }
+
   def admin() = AdminAction {
     Ok(views.html.admin("JMaghreb")).withCookies()
   }
@@ -69,79 +71,82 @@ object Application extends Controller with MongoController {
             MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
               messageBody,
               (userJson \ "fname").as[String])
-              Ok(Messages("registration.creationsuccess.message", json \ "_id"))
+            Ok(Messages("registration.creationsuccess.message", json \ "_id"))
           }
-          ).recover{
-            case e:DatabaseException => {e.code match {
-              case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
-              case _ => BadRequest(Messages("globals.serverInternalError.message"))
-            }}
+          ).recover {
+            case e: DatabaseException => {
+              e.code match {
+                case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
+                case _ => BadRequest(Messages("globals.serverInternalError.message"))
+              }
+            }
           }
 
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
   }
-  def activateAccount(email:String,activationCode:String) = Action.async{
+
+  def activateAccount(email: String, activationCode: String) = Action.async {
     implicit request => {
-    collection.update(
+      collection.update(
         Json.obj(("_id" -> email)
-          ,("activationCode" -> activationCode)
+          , ("activationCode" -> activationCode)
         )
-      , Json.obj("$set"-> Json.obj("actif"->1))
+        , Json.obj("$set" -> Json.obj("actif" -> 1))
       )
-      .map(lastError => {
-      lastError.get("n").map{ value =>
-        val linesUpdated = value match {
-          case linesUpdate:BSONInteger => linesUpdate.value
-          case _ => 0;
-        }
-        if(linesUpdated > 0) {
-          Redirect("/",302)
-        }
-          else{
-            Ok("Invalid activation code ! ")
-          }
-      }.get
-    })
+        .map(lastError => {
+        lastError.get("n").map {
+          value =>
+            val linesUpdated = value match {
+              case linesUpdate: BSONInteger => linesUpdate.value
+              case _ => 0;
+            }
+            if (linesUpdated > 0) {
+              Redirect("/", 302)
+            }
+            else {
+              Ok("Invalid activation code ! ")
+            }
+        }.get
+      })
     }
   }
-  def reviewerActivation(email:String,activationCode:String) = Action.async {
+
+  def reviewerActivation(email: String, activationCode: String) = Action.async {
     implicit request => {
-      request.body.asJson.map { json => {
-        val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email)
-          ,("activationCode" -> activationCode))).cursor[JsObject]
-        cursor.headOption.map(value => {
-          value.map(content => {
-            Redirect("/regReviwer",302).withSession(("user", content.toString()),("rev","true"))
-          }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
-        })
+      val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email)
+        , ("activationCode" -> activationCode))).cursor[JsObject]
+      cursor.headOption.map(value => {
+        value.map(content => {
+          Redirect("/profile", 302).withSession(("user", content.toString()), ("rev", "true"))
+        }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
+      })
+    }
+  }
+
+  def createReviewer(email: String) = Action.async {
+    implicit request => {
+      val userJson = Json.obj(("_id" -> email), ("reviewer" -> true)).transform(generatActivationCode).get
+      collection.insert(userJson).map(_ => {
+        val messageBody = Messages("reviewers.activation.email.body", email, (userJson \ "activationCode").as[String])
+        MailUtil.send((userJson \ "_id").as[String], Messages("reviewers.activation.email.subject"),
+          messageBody,
+          "")
+        Ok(Messages("registration.creationsuccess.message", userJson \ "_id"))
       }
-      }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+      ).recover {
+        case e: DatabaseException => {
+          e.code match {
+            case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
+            case _ => BadRequest(Messages("globals.serverInternalError.message"))
+          }
+        }
+      }
     }
   }
-  def createReviewer(email:String) = Action.async {
-    implicit request => {
-          val userJson = Json.obj(("_id"->email),("reviewer"->true)).transform(generatActivationCode).get
-           //println("feerrvvvvvvvvvvvvvvv")
-            collection.insert(userJson).map(_ => {
-            val messageBody = Messages("reviewers.activation.email.body", email, (userJson \ "activationCode").as[String])
-              //println("mesage bodduuuuuuuuuuuuuu "+userJson)
-            MailUtil.send((userJson \ "_id").as[String], Messages("reviewers.activation.email.subject"),
-              messageBody,
-              "")
-              //println("mesage mechaaaaaaaaaaaaaaaa  ")
-            Ok(Messages("registration.creationsuccess.message", userJson \ "_id"))
-          }
-          ).recover{
-            case e:DatabaseException => {e.code match {
-              case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
-              case _ => BadRequest(Messages("globals.serverInternalError.message"))
-            }}
-          }
-    }
-  }
-  val bodyParser = BodyParser(rh => Iteratee.fold[Array[Byte], Array[Byte]](Array[Byte]())((c,a) => c ++ a ).map(Right(_)) )
+
+  val bodyParser = BodyParser(rh => Iteratee.fold[Array[Byte], Array[Byte]](Array[Byte]())((c, a) => c ++ a).map(Right(_)))
 
   def upload = Action.async(parse.maxLength(maxLength = 1024000, bodyParser)) {
     rq => {
@@ -180,26 +185,26 @@ object Application extends Controller with MongoController {
 
   def login = Action.async {
     implicit request => {
-      request.body.asJson.map { json => {
-        val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> json \"_id"), ("password" -> json \"password"), ("actif" -> 1))).cursor[JsObject]
-        cursor.headOption.map(value => {
-          value.map(content => {
-            val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
-            Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
-          }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
-        })
-      }
+      request.body.asJson.map {
+        json => {
+          val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> json \ "_id"), ("password" -> json \ "password"), ("actif" -> 1))).cursor[JsObject]
+          cursor.headOption.map(value => {
+            value.map(content => {
+              val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
+              Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
+            }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
+          })
+        }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
   }
-
 
 
   def speaker(email: String) = Action.async {
     val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email))).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
-        val sessionUser = content.transform(((__ \ 'fname).json.pickBranch and (__ \ 'lname).json.pickBranch  and (__ \ 'image).json.pickBranch).reduce)
+        val sessionUser = content.transform(((__ \ 'fname).json.pickBranch and (__ \ 'lname).json.pickBranch and (__ \ 'image).json.pickBranch).reduce)
         Ok(sessionUser.get)
       }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
     })
@@ -211,8 +216,11 @@ object Application extends Controller with MongoController {
         connectedUser => {
           val userJson = Json.parse(connectedUser)
           val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> userJson \ "_id"))).cursor[JsObject]
-          cursor.headOption.map{_.map{Ok(_)}
-            .getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
+          cursor.headOption.map {
+            _.map {
+              Ok(_)
+            }
+              .getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
           }
 
         }
@@ -220,13 +228,14 @@ object Application extends Controller with MongoController {
 
     }
   }
+
   def saveProfile = Action.async {
     implicit request => {
       request.body.asJson.flatMap {
         json => {
           session.get("user").map(connectedUser => {
             val newJson = json.transform((__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
-            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")),newJson).map(_ => Ok(Messages("registration.save.message")))
+            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), newJson).map(_ => Ok(Messages("registration.save.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
@@ -250,9 +259,11 @@ object Application extends Controller with MongoController {
 
     }
   }
-  def resOk(message:String, data:JsValue) = {
-    Ok(Json.obj("message" -> message)++Json.obj("data"-> data))
+
+  def resOk(message: String, data: JsValue) = {
+    Ok(Json.obj("message" -> message) ++ Json.obj("data" -> data))
   }
+
   def editTalk = Action.async {
     implicit request => {
       request.body.asJson.flatMap {
@@ -263,17 +274,17 @@ object Application extends Controller with MongoController {
               // creation
               case _: JsUndefined => {
 
-                val generateCreated = (__ \ 'created \ '$date).json.put( JsNumber((new java.util.Date).getTime) )
-                val addMongoIdAndDate: Reads[JsObject] = __.json.update( (generateId and generateCreated).reduce )
-                val res = json.transform( addMongoIdAndDate  andThen (__ \ 'loading).json.prune ).get
+                val generateCreated = (__ \ 'created \ '$date).json.put(JsNumber((new java.util.Date).getTime))
+                val addMongoIdAndDate: Reads[JsObject] = __.json.update((generateId and generateCreated).reduce)
+                val res = json.transform(addMongoIdAndDate andThen (__ \ 'loading).json.prune).get
                 talks.insert(res ++ Json.obj(("speaker" -> userJson.as[JsObject]))).map(lastError => {
-                  resOk(Messages("talk.creationsuccess.message"),res)
+                  resOk(Messages("talk.creationsuccess.message"), res)
                 })
               }
               // edit
               case value: JsValue => {
                 val query = Json.obj(("_id" -> value), ("speaker._id" -> userJson \ "_id"), ("status" -> 1))
-                val generateUpdated = (__ \ 'updated \ '$date).json.put( JsNumber((new java.util.Date).getTime) )
+                val generateUpdated = (__ \ 'updated \ '$date).json.put(JsNumber((new java.util.Date).getTime))
                 val res = json.transform(__.json.update(generateUpdated) andThen (__ \ '_id).json.prune andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
                 talks.update(query, Json.obj(("$set" -> res.get))).map(lastError =>
                   Ok(Messages("talk.creationsuccess.message")))
@@ -309,7 +320,7 @@ object Application extends Controller with MongoController {
             }
           }
           config.save(res).map(lastError =>
-            resOk(Messages("registration.configSaved.message"),res))
+            resOk(Messages("registration.configSaved.message"), res))
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
