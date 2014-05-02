@@ -113,7 +113,7 @@ object Application extends Controller with MongoController {
           ,("activationCode" -> activationCode))).cursor[JsObject]
         cursor.headOption.map(value => {
           value.map(content => {
-            Redirect("/regReviwer",302).withSession(("user", content.toString()))
+            Redirect("/regReviwer",302).withSession(("user", content.toString()),("rev","true"))
           }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
         })
       }
