@@ -52,6 +52,9 @@ object Application extends Controller with MongoController {
   def profile = Action {
     Ok(views.html.profile("JMaghreb"))
   }
+  def revProfile = Action {
+    Ok(views.html.revProfile("JMaghreb"))
+  }
 
   def admin() = AdminAction {
     Ok(views.html.admin("JMaghreb")).withCookies()
