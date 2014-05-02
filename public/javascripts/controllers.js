@@ -221,6 +221,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         if (!$scope.config.sessionTypes) $scope.config.sessionTypes = []
         if (!$scope.config.tracks) $scope.config.tracks = []
         if (!$scope.config.audienceExperiences) $scope.config.audienceExperiences = []
+        if (!$scope.config.reviewers) $scope.config.reviewers = []
     }
     $scope.initLists();
     $scope.addLang = function (type) {
@@ -242,6 +243,9 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
                 break;
             case 'exp':
                 $scope.config.audienceExperiences.push({});
+                break;
+            case 'reviewers':
+                $scope.config.reviewers.push({});
                 break;
             default:
                 $scope.selectedVar = 'bbbbxbxbxb';
