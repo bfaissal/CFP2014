@@ -125,8 +125,8 @@ object Application extends Controller with MongoController {
           val userJson = Json.obj(("_id"->email),("reviewer"->true)).transform(generatActivationCode).get
 
             collection.insert(userJson).map(_ => {
-            val messageBody = Messages("reviewers.activation.email.body", (json \ "fname").as[String], (json \ "_id").as[String], (userJson \ "activationCode").as[String])
-            MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
+            val messageBody = Messages("reviewers.activation.email.body", email, (userJson \ "activationCode").as[String])
+            MailUtil.send((userJson \ "_id").as[String], Messages("reviewers.activation.email.subject"),
               messageBody,
               (userJson \ "fname").as[String])
             Ok(Messages("registration.creationsuccess.message", json \ "_id"))
