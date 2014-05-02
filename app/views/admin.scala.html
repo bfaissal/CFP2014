@@ -49,7 +49,7 @@
                             <td><input placeholder="Label" type="text" ng-model="item.labelFr"></td>
                             <td><input placeholder="Value" type="text" ng-model="item.value"></td>
                             <td><input placeholder="Value" type="text" ng-model="item.order"></td>
-                            <td><button class="ui small icon red button" ng-click="delete(config.languages,item,$index)"><i class="ui remove icon"></i></button></td>
+                            <td><button class="ui small icon red button" ng-click="delete(config.confDays,item,$index)"><i class="ui remove icon"></i></button></td>
 
                         </tr>
 
@@ -187,6 +187,29 @@
                         </tr></tfoot>
                 </table>
 
+                <h2 class="ui dividing header">Audience Experience</h2>
+                <table class="ui table segment">
+                    <thead>
+                        <tr><th>Email</th>
+                            <th>Value</th>
+                            <th>Order</th>
+                            <th></th>
+                        </tr></thead>
+                    <tbody>
+                        <tr ng-repeat="item in config.reviewers | orderBy:predicate:reverse track by $index ">
+                            <td><input placeholder="Email" type="text" ng-model="item.email"></td>
+                            <td><button class="ui small icon red button" ng-click="activateRev(config.reviewers,item,$index)"><i class="ui remove icon"></i></button></td>
+                            <td><button class="ui small icon red button" ng-click="delete(config.reviewers,item,$index)"><i class="ui remove icon"></i></button></td>
+
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+                        <tr><th colspan="4">
+                            <button class="ui blue labeled icon small button" ng-click="addLang('reviewers')"><i class="add icon"></i> Add</button>
+                        </th>
+                        </tr></tfoot>
+                </table>
 
                 <div style="width : 100 % ; text-align : center">
                     <div class="ui buttons center">
