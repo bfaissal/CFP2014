@@ -265,6 +265,20 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
             })
     }
     $scope.delete = function (list,item, index) {
+        if (confirm("Are you sure you want to send and email to this reviewer ?")) {
+            for ( a in list){
+                if(list[a].label == item.label){
+                    index = a ;
+                }
+            }
+            $http.post("/saveConfig", JSON.stringify($scope.config)).success(function(){
+                item.emailSent= true;
+                $scope.save()
+            })
+
+        }
+    }
+    $scope.delete = function (list,item, index) {
         if (confirm("Are you sure you want to delete this line ?")) {
             for ( a in list){
                 if(list[a].label == item.label){
