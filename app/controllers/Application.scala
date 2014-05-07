@@ -195,6 +195,7 @@ object Application extends Controller with MongoController {
             value.map(content => {
               val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune
                 andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune  )
+              println(sessionUser)
               Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
             }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
           })
@@ -219,7 +220,7 @@ object Application extends Controller with MongoController {
       session.get("user").map {
         connectedUser => {
           val userJson = Json.parse(connectedUser)
-          val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> userJson \ "id"))).cursor[JsObject]
+          val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> userJson \ "_id"))).cursor[JsObject]
           cursor.headOption.map {
             _.map {
               Ok(_)
@@ -251,7 +252,7 @@ object Application extends Controller with MongoController {
         json => {
           session.get("user").map(connectedUser => {
             val newJson = json.transform((__ \ '_id).json.prune andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
-            collection.update(Json.obj(("id" -> Json.parse(connectedUser) \ "id")), Json.obj("$set"->newJson)).map(_ => Ok(Messages("registration.save.message")))
+            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), Json.obj("$set"->newJson)).map(_ => Ok(Messages("registration.save.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
@@ -263,7 +264,7 @@ object Application extends Controller with MongoController {
         json => {
           session.get("user").map(connectedUser => {
             val newJson = json.transform((__ \ 'admin).json.prune).get
-            collection.update(Json.obj(("id" -> Json.parse(connectedUser) \ "id")), newJson).map(_ => Ok(Messages("registration.save.message")))
+            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), newJson).map(_ => Ok(Messages("registration.save.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
@@ -274,7 +275,7 @@ object Application extends Controller with MongoController {
     implicit request => {
       session.get("user").map(user => {
         val userJson = Json.parse(user)
-        val query = Json.obj(("speaker.id" -> userJson \ "id"), ("status" -> Json.obj(("$ne" -> 5))))
+        val query = Json.obj(("speaker._id" -> userJson \ "_id"), ("status" -> Json.obj(("$ne" -> 5))))
         val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
         val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
         //val futurePersonsJsonArray: Future[JsArray] =
