@@ -11,3 +11,4 @@ reviewers.activation.email.body=Hello,<p>You''ve been added to JMaghreb reviewer
 reviewers.activation.email.subject=Your JMaghreb reviewer account
 fp.email.subject=JMaghreb CFP: Password reset
 fp.email.body=<p>You have recently requested a new password.</p><p>Please log in to the JMaghreb CFP at http://cfp.jmaghreb.io using the following temporary password:</p><p>{0}</p><p>If you require assistance, please contact us at info@jmaghreb.io</p>
+forgetpassword.activation.success.message=An email with a temporary password has been sent to your email.
