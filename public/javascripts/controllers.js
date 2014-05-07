@@ -42,8 +42,42 @@ jmaghreb.controller('LoginCtrl', function ($scope, $http) {
 })
 
 
+
+jmaghreb.controller('fpCtrl', function ($scope, $http) {
+    $scope.showMessages = "hidden";
+    $scope.showSuccessMessages = "hidden";
+    $scope.errorClass = function(field){
+        if(!registrationForm[field].$invalid){
+            return "error";
+        }
+        else{
+            return "error";
+        }
+    }
+    $scope.submit = function () {
+        $scope.showSuccessMessages = "hidden";
+        $scope.showMessages = "hidden";
+        try{
+            $http.post("/fp/"+$scope.login._id).success(function (data) {
+                $scope.showSuccessMessages = "shown";
+            }).error(function(){
+                    $scope.showMessages = "shown";
+                })
+        }catch(e){
+            $scope.showMessages = "shown";
+        }
+    }
+})
+
 jmaghreb.controller('MainCtrl', function ($scope,$rootScope, $http) {
     $rootScope.loginShow = true;
+    $rootScope.fpShow = false;
+    $scope.goFp = function () {
+        $rootScope.fpShow = true;
+    }
+    $scope.cancelFp = function () {
+        $rootScope.fpShow = false;
+    }
     $scope.goRegister = function () {
         $rootScope.loginShow = false;
     }

@@ -232,6 +232,18 @@ object Application extends Controller with MongoController {
     }
   }
 
+  def forgetPassword(username: String) = Action.async {
+    implicit request => {
+      var passwordString = CFPUtil.randomString()
+      val newPassword = Json.obj(("$set" -> Json.obj(("password" -> passwordString))))
+      collection.update(Json.obj(("_id" -> username)), newPassword).map(_ => {
+        MailUtil.send(username, Messages("fp.email.subject"),
+          Messages("fp.email.body", passwordString),
+          "")
+        Ok(Messages("registration.save.message"))
+      })
+    }
+  }
   def saveProfile = Action.async {
     implicit request => {
       request.body.asJson.flatMap {

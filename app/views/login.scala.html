@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 } {
     <div id="container" ng-app="jmaghreb" style="margin-top: 50px;" ng-cloak ng-controller="MainCtrl">
-        <div class="ui one column middle aligned relaxed grid basic segment show-hide-animation" ng-show="loginShow" id="loginContainer" ng-controller="LoginCtrl">
+        <div class="ui one column middle aligned relaxed grid basic segment show-hide-animation" ng-show="!fpShow && loginShow" id="loginContainer" ng-controller="LoginCtrl">
             <div class="column" id="loginBox">
 
                 <div class="ui form segment">
@@ -47,6 +47,9 @@
                                 Register</div>
                         </div>
                     </div>
+            <div>
+                <a ng-click="goFp()">Forgot your password ?</a>
+            </div>
                     <div class="ui success message show-hide-animation" ng-show="saveSuccess" style="position: fixed;top: 100px;width: 50%;" ng-cloak>
                         <i class="close icon" ng-click="saveSuccess = false"></i>
                         <div class="header">
@@ -58,7 +61,7 @@
 
 
         </div>
-        <div id="registrationContainer" ng-controller="RegistrationCtrl" class="show-hide-animation"  ng-show="!loginShow">
+        <div id="registrationContainer" ng-controller="RegistrationCtrl" class="show-hide-animation"  ng-show="!fpShow && !loginShow">
             <form name="registrationForm" novalidate>
                 <div class="ui form segment" id="registrationBox">
                     <div class="two fields">
@@ -140,6 +143,46 @@
                 </div>
             </form>
         </div>
+        <div class="ui one column middle aligned relaxed grid basic segment show-hide-animation" ng-show="fpShow" id="fpContainer" ng-controller="fpCtrl">
+        <div class="column" id="loginBox">
+
+            <div class="ui form segment">
+
+                    <div class="ui success message show-hide-animation" ng-class="showSuccessMessages" ng-cloak>
+                        <i class="close icon" ng-click="saveSuccess = false"></i>
+                        <div class="header">
+                        @Messages("forgetpassword.activation.success.message")
+            </div>
+        </div>
+
+        <div class="ui error message" ng-class="showMessages">
+            Incorrect username
+        </div>
+        <div class="field">
+            <label>Email</label>
+            <div class="ui left labeled icon input">
+                <input type="text" placeholder="Email" ng-model="login._id">
+                <i class="user icon"></i>
+                <div class="ui corner label">
+                    <i class="asterisk icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div style="width : 100 % ; text-align : center">
+            <div class="ui buttons center">
+                <div class="ui blue button" ng-click="submit()">Submit</div>
+
+                <div class="ui blue button" ng-click="cancelFp()">
+                    Cancel</div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+
+    </div>
     </div>
 
 
