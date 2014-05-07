@@ -233,7 +233,7 @@ jmaghreb.controller('talksCtrl', function ($scope, $http) {
     }
     $scope.findSpeaker = function(speaker){
         console.log($scope.selectedTalk.otherSpeakers)
-        $http.get("/speaker/"+speaker._id).success(function (data) {
+        $http.get("/speaker/"+speaker.id).success(function (data) {
             speaker.fname = data.fname
             speaker.lname = data.lname
             speaker.image = data.image

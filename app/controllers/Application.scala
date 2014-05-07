@@ -70,11 +70,11 @@ object Application extends Controller with MongoController {
         json => {
           val userJson = json.transform(generatActivationCode andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
           collection.insert(userJson).map(_ => {
-            val messageBody = Messages("registration.email.body", (json \ "fname").as[String], (json \ "_id").as[String], (userJson \ "activationCode").as[String])
-            MailUtil.send((userJson \ "_id").as[String], Messages("registration.email.subject"),
+            val messageBody = Messages("registration.email.body", (json \ "fname").as[String], (json \ "id").as[String], (userJson \ "activationCode").as[String])
+            MailUtil.send((userJson \ "id").as[String], Messages("registration.email.subject"),
               messageBody,
               (userJson \ "fname").as[String])
-            Ok(Messages("registration.creationsuccess.message", json \ "_id"))
+            Ok(Messages("registration.creationsuccess.message", json \ "id"))
           }
           ).recover {
             case e: DatabaseException => {
@@ -93,7 +93,7 @@ object Application extends Controller with MongoController {
   def activateAccount(email: String, activationCode: String) = Action.async {
     implicit request => {
       collection.update(
-        Json.obj(("_id" -> email)
+        Json.obj(("id" -> email)
           , ("activationCode" -> activationCode)
         )
         , Json.obj("$set" -> Json.obj("actif" -> 1))
@@ -118,7 +118,7 @@ object Application extends Controller with MongoController {
 
   def reviewerActivation(email: String, activationCode: String) = Action.async {
     implicit request => {
-      val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email)
+      val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> email)
         , ("activationCode" -> activationCode))).cursor[JsObject]
       cursor.headOption.map(value => {
         value.map(content => {
@@ -130,13 +130,13 @@ object Application extends Controller with MongoController {
 
   def createReviewer(email: String) = Action.async {
     implicit request => {
-      val userJson = Json.obj(("_id" -> email), ("reviewer" -> true)).transform(generatActivationCode).get
+      val userJson = Json.obj(("id" -> email), ("reviewer" -> true)).transform(generatActivationCode).get
       collection.insert(userJson).map(_ => {
         val messageBody = Messages("reviewers.activation.email.body", email, (userJson \ "activationCode").as[String])
-        MailUtil.send((userJson \ "_id").as[String], Messages("reviewers.activation.email.subject"),
+        MailUtil.send((userJson \ "id").as[String], Messages("reviewers.activation.email.subject"),
           messageBody,
           "")
-        Ok(Messages("registration.creationsuccess.message", userJson \ "_id"))
+        Ok(Messages("registration.creationsuccess.message", userJson \ "id"))
       }
       ).recover {
         case e: DatabaseException => {
@@ -190,7 +190,7 @@ object Application extends Controller with MongoController {
     implicit request => {
       request.body.asJson.map {
         json => {
-          val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> json \ "_id"), ("password" -> json \ "password"), ("actif" -> 1))).cursor[JsObject]
+          val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> json \ "id"), ("password" -> json \ "password"), ("actif" -> 1))).cursor[JsObject]
           cursor.headOption.map(value => {
             value.map(content => {
               val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
@@ -204,7 +204,7 @@ object Application extends Controller with MongoController {
 
 
   def speaker(email: String) = Action.async {
-    val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> email))).cursor[JsObject]
+    val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> email))).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
         val sessionUser = content.transform(((__ \ 'fname).json.pickBranch and (__ \ 'lname).json.pickBranch and (__ \ 'image).json.pickBranch).reduce)
@@ -218,7 +218,7 @@ object Application extends Controller with MongoController {
       session.get("user").map {
         connectedUser => {
           val userJson = Json.parse(connectedUser)
-          val cursor: Cursor[JsObject] = collection.find(Json.obj(("_id" -> userJson \ "_id"))).cursor[JsObject]
+          val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> userJson \ "id"))).cursor[JsObject]
           cursor.headOption.map {
             _.map {
               Ok(_)
@@ -236,7 +236,7 @@ object Application extends Controller with MongoController {
     implicit request => {
       var passwordString = CFPUtil.randomString()
       val newPassword = Json.obj(("$set" -> Json.obj(("password" -> passwordString))))
-      collection.update(Json.obj(("_id" -> username)), newPassword).map(_ => {
+      collection.update(Json.obj(("id" -> username)), newPassword).map(_ => {
         MailUtil.send(username, Messages("fp.email.subject"),
           Messages("fp.email.body", passwordString),
           "")
@@ -249,8 +249,8 @@ object Application extends Controller with MongoController {
       request.body.asJson.flatMap {
         json => {
           session.get("user").map(connectedUser => {
-            val newJson = json.transform((__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
-            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), newJson).map(_ => Ok(Messages("registration.save.message")))
+            val newJson = json.transform((__ \ '_id).json.prune andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
+            collection.update(Json.obj(("id" -> Json.parse(connectedUser) \ "id")), Json.obj("$set"->newJson)).map(_ => Ok(Messages("registration.save.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
@@ -262,7 +262,7 @@ object Application extends Controller with MongoController {
         json => {
           session.get("user").map(connectedUser => {
             val newJson = json.transform((__ \ 'admin).json.prune).get
-            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), newJson).map(_ => Ok(Messages("registration.save.message")))
+            collection.update(Json.obj(("id" -> Json.parse(connectedUser) \ "id")), newJson).map(_ => Ok(Messages("registration.save.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
@@ -273,7 +273,7 @@ object Application extends Controller with MongoController {
     implicit request => {
       session.get("user").map(user => {
         val userJson = Json.parse(user)
-        val query = Json.obj(("speaker._id" -> userJson \ "_id"), ("status" -> Json.obj(("$ne" -> 5))))
+        val query = Json.obj(("speaker.id" -> userJson \ "id"), ("status" -> Json.obj(("$ne" -> 5))))
         val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
         val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
         //val futurePersonsJsonArray: Future[JsArray] =
@@ -310,7 +310,7 @@ object Application extends Controller with MongoController {
               }
               // edit
               case value: JsValue => {
-                val query = Json.obj(("_id" -> value), ("speaker._id" -> userJson \ "_id"), ("status" -> 1))
+                val query = Json.obj(("_id" -> value), ("speaker.id" -> userJson \ "id"), ("status" -> 1))
                 val generateUpdated = (__ \ 'updated \ '$date).json.put(JsNumber((new java.util.Date).getTime))
                 val res = json.transform(__.json.update(generateUpdated) andThen (__ \ '_id).json.prune andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
                 talks.update(query, Json.obj(("$set" -> res.get))).map(lastError =>

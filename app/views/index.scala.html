@@ -95,7 +95,7 @@
                                 <label>Other speakers</label>
                                 <div class="" ng-repeat="speaker in selectedTalk.otherSpeakers  track by $index" style="margin-bottom: 5px;">
                                     <div ng-if="speaker.lname == ''" class="ui left labeled icon input">
-                                        <input type="text" placeholder="Title" ng-model="speaker._id" ng-change="findSpeaker(speaker)">
+                                        <input type="text" placeholder="Title" ng-model="speaker.id" ng-change="findSpeaker(speaker)">
                                         <i class="user icon"></i>
                                         <div class="ui corner label">
                                             <i class="icon asterisk"></i>
