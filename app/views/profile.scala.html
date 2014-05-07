@@ -12,7 +12,7 @@
         </a>
         <div class="right menu">
             <div class="item">
-                <a class="ui teal button" href="/logout">Logout</a>
+                <a class="ui blue button" href="/logout">Logout</a>
             </div>
         </div>
     </div>
@@ -51,6 +51,13 @@
                         <div class="ui left labeled icon input">
                             <input placeholder="Your Twitter accounte" type="text" ng-model="register.twitter">
                             <i class="twitter icon"></i>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Bio</label>
+                        <div class="ui left labeled icon input">
+                            <textarea placeholder="Your bio" type="text" ng-model="register.bio" ng-required="true"></textarea>
+                            <i class=" icon"></i>
                         </div>
                     </div>
                     <div class="field">

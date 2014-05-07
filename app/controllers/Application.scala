@@ -193,7 +193,8 @@ object Application extends Controller with MongoController {
           val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> json \ "id"), ("password" -> json \ "password"), ("actif" -> 1))).cursor[JsObject]
           cursor.headOption.map(value => {
             value.map(content => {
-              val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune)
+              val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune
+                andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune  )
               Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
             }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
           })
