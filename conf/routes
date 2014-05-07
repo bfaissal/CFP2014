@@ -10,12 +10,15 @@ GET         /deleteImage/:id/:action                       controllers.Applicati
 POST        /login                                         controllers.Application.login
 GET         /proposals                                     controllers.Application.index
 GET         /talks                                         controllers.Application.talksList
+GET         /allTalks                                      controllers.Application.allTalks
+GET         /acceptedTalks                                 controllers.Application.acceptedTalks
 POST        /editTalk                                      controllers.Application.editTalk
 GET         /logout                                        controllers.Application.logout
 POST        /logout                                        controllers.Application.logout
 GET         /profile                                       controllers.Application.profile
 GET         /revProfile                                    controllers.Application.revProfile
 GET         /admin                                         controllers.Application.admin
+GET         /adminTalks                                    controllers.Application.adminTalks
 GET         /config                                        controllers.Application.getConfig
 POST        /saveConfig                                    controllers.Application.saveConfig
 GET         /speaker/:mail                                 controllers.Application.speaker(mail:String)
@@ -25,6 +28,6 @@ POST        /saveReviewer                                  controllers.Applicati
 GET         /activateAccount/:email/:activationCode        controllers.Application.activateAccount(email:String,activationCode:String)
 GET         /revAct/:email/:activationCode                 controllers.Application.reviewerActivation(email:String,activationCode:String)
 POST        /createRev/:mail                               controllers.Application.createReviewer(mail:String)
-POST        /fp/:mail                           controllers.Application.forgetPassword(mail:String)
+POST        /fp/:mail                                      controllers.Application.forgetPassword(mail:String)
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                  controllers.Assets.at(path="/public", file)

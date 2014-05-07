@@ -3,23 +3,22 @@
 @main("JMaghreb Call For Paper") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 } {
-    <div>
-        <div class="ui fixed transparent main small menu" style="top : 0 ; left : 0" ng-controller="">
+    <div  ng-app="jmaghreb" ng-controller="AdminCtrl">
+        <div class="ui fixed transparent main small menu" style="top : 0 ; left : 0" >
             <a class="active item" href="/admin">
                 <i class="home icon"></i> Home
             </a>
-
+            <a class="item" href="/adminTalks">
+                <i class="home icon"></i> Talks
+            </a>
             <div class="right menu">
-
-
                 <div class="item">
                     <a class="ui blue button" href="/logout">Logout</a>
                 </div>
             </div>
         </div>
-        <div id="container" ng-app="jmaghreb" style="margin-top : 50 px ;" ng-cloak>
-
-            <div id="profileContainer" ng-controller="AdminCtrl" style="margin-top : 50 px ; margin-bottom : 50 px ;">
+        <div id="container" style="margin-top:50px ;" ng-cloak>
+            <div id="profileContainer"  style="margin-top :50px ; margin-bottom:50px ;">
 
                 <div class="ui form segment" id="registrationBox">
                     <h2 class="ui dividing header">Dates</h2>
@@ -233,6 +232,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
 } {

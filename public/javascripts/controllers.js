@@ -257,12 +257,16 @@ jmaghreb.controller('talksCtrl', function ($scope, $http) {
 
 jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     $scope.config = {};
+    $scope.talks = {};
     $scope.predicate = 'order'
     saveSuccess = false;
     $scope.reverse = false;
     $http.get("/config").success(function (data) {
         $scope.config = data;
         $scope.initLists();
+    })
+    $http.get("/allTalks").success(function (data) {
+        $scope.talks = data;
     })
     $scope.initLists = function () {
         if (!$scope.config.languages) $scope.config.languages = []

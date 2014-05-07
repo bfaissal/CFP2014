@@ -59,6 +59,9 @@ object Application extends Controller with MongoController {
   def admin() = AdminAction {
     Ok(views.html.admin("JMaghreb")).withCookies()
   }
+  def adminTalks() = AdminAction {
+    Ok(views.html.adminTalks("JMaghreb")).withCookies()
+  }
 
   def logout = Action {
     Ok(views.html.login("JMaghreb")).withNewSession
@@ -276,6 +279,40 @@ object Application extends Controller with MongoController {
       session.get("user").map(user => {
         val userJson = Json.parse(user)
         val query = Json.obj(("speaker._id" -> userJson \ "_id"), ("status" -> Json.obj(("$ne" -> 5))))
+        val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+        val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
+        //val futurePersonsJsonArray: Future[JsArray] =
+        futurePersonsList.map {
+          persons =>
+            Ok(Json.toJson(persons))
+        }
+
+      }).getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+
+    }
+  }
+  def allTalks() = AdminAction.async {
+    implicit request => {
+      session.get("user").map(user => {
+        val userJson = Json.parse(user)
+        val query = Json.obj()
+        val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+        val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
+        //val futurePersonsJsonArray: Future[JsArray] =
+        futurePersonsList.map {
+          persons =>
+            Ok(Json.toJson(persons))
+        }
+
+      }).getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+
+    }
+  }
+  def acceptedTalks() = AdminAction.async {
+    implicit request => {
+      session.get("user").map(user => {
+        val userJson = Json.parse(user)
+        val query = Json.obj(("status" -> 4))
         val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
         val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
         //val futurePersonsJsonArray: Future[JsArray] =
