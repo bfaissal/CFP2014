@@ -345,6 +345,48 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
             $scope.save()
         }
     }
+
+    // talks admin
+
+    $scope.edit = function (talk) {
+        $scope.selectedTalk = {}
+        $scope.selectedTalk = talk;
+        $scope.form = true;
+        $scope.edition = true;
+    }
+    $scope.add = function () {
+        $scope.selectedTalk = {}
+        $scope.form = true;
+        $scope.edition = false;
+        $scope.selectedTalk.status = 1;
+    }
+    $scope.save = function () {
+        $scope.selectedTalk.loading = true;
+        $http.post("/adminEditTalk", JSON.stringify($scope.selectedTalk)).error(function (error) {
+
+            $scope.selectedTalk.error = true;
+        }).success(function (data) {
+                $scope.selectedTalk.loading = false;
+                $scope.selectedTalk.error = false;
+                if (data.data) {
+                    $scope.talks.push(data.data)
+                }
+            })
+        $scope.cancel();
+    }
+    $scope.changeStatus = function (talk, status) {
+        var message = status == 2 ? 'Do you want to complete this talk ?' : 'Do you want to delete this talk ?'
+        if (status == 1 || confirm(message)) {
+            $scope.selectedTalk = talk;
+            $scope.selectedTalk.status = status;
+            $scope.save();
+        }
+    }
+    $scope.cancel = function () {
+
+        $scope.form = false;
+        $scope.edition = false;
+    }
 })
 
 jmaghreb.config(function ($routeProvider) {

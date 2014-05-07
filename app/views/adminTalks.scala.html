@@ -20,7 +20,126 @@
             </div>
         </div>
 
-        <div class="row" style="margin-top:50px ;" >
+        <form name="tForm" style="margin-top:50px ;"  novalidate>
+            <div class="ui one column grid show-hide-animation " ng-show="form">
+                <div class="row " >
+                    <div class="column">
+                        <div class="ui form segment">
+                            <button ng-disabled="tForm.$invalid" ng-class="disabled(tForm.$invalid)" class="ui small blue submit button" ng-click="save()">Save</button>
+                            <button class="ui small button" ng-click="cancel()">
+                                cancel
+                            </button>
+                            <div class="field">
+                                <label>Title</label>
+                                <div class="ui left labeled icon input">
+                                    <input type="text" placeholder="Title" ng-required="true" ng-model="selectedTalk.title">
+                                    <i class="book icon"></i>
+                                    <div class="ui corner label">
+                                        <i class="icon asterisk"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Language</label>
+                                <div class="ui left labeled icon input">
+                                    <select ng-model="selectedTalk.language.value" ng-required="true" ng-change="updateValue(selectedTalk.language,'lang')">
+                                        <option value="">...</option>
+                                        <option ng-repeat="lang in config.languages | orderBy:predicateList:reverse" value="{{lang.value}}">
+                                            {{lang.label}}</option>
+                                    </select>
+                                    <div class="ui corner label">
+                                        <i class="icon asterisk"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Session type</label>
+                                <div class="ui left labeled icon input">
+                                    <select ng-model="selectedTalk.type.value" ng-required="true" ng-change="updateValue(selectedTalk.type,'type')">
+                                        <option value="">...</option>
+                                        <option ng-repeat="lang in config.sessionTypes | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                            {{lang.label}}</option>
+                                    </select>
+                                    <div class="ui corner label">
+                                        <i class="icon asterisk"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Session track</label>
+                                <div class="ui left labeled icon input">
+                                    <select ng-model="selectedTalk.track.value" ng-required="true" ng-change="updateValue(selectedTalk.track,'track')">
+                                        <option value="">...</option>
+                                        <option ng-repeat="lang in config.tracks | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                            {{lang.label}}</option>
+                                    </select>
+                                    <div class="ui corner label">
+                                        <i class="icon asterisk"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Audience experience</label>
+                                <div class="ui left labeled icon input">
+                                    <select ng-model="selectedTalk.experience.value" ng-required="true" ng-change="updateValue(selectedTalk.experience,'exp')">
+                                        <option value="">...</option>
+                                        <option ng-repeat="lang in config.audienceExperiences | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                            {{lang.label}}</option>
+                                    </select>
+                                    <div class="ui corner label">
+                                        <i class="icon asterisk"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label>Other speakers</label>
+                                <div class="" ng-repeat="speaker in selectedTalk.otherSpeakers  track by $index" style="margin-bottom: 5px;">
+                                    <div ng-if="speaker.lname == ''" class="ui left labeled icon input">
+                                        <input type="text" placeholder="Title" ng-model="speaker.id" ng-change="findSpeaker(speaker)">
+                                        <i class="user icon"></i>
+                                        <div class="ui corner label">
+                                            <i class="icon asterisk"></i>
+                                        </div>
+                                    </div>
+                                    <div ng-if="speaker.lname != ''">
+                                        <div class="extra images">
+                                            <img style="height: 50px" src="{{speaker.image}}" />
+                                            {{speaker.fname}}, {{speaker.lname}}
+                                            <button class="ui small icon red button" ng-click="deleteSpeaker($index)"><i class="ui remove icon"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="ui divider"></div>
+                                </div>
+                                <div class="ui left labeled input">
+
+                                    <button class="ui small icon button" ng-click="addSpeaker(selectedTalk)"><i class="add icon"></i></button>
+
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Abstract</label>
+                                <div class="ui left labeled icon input">
+                                    <textarea ng-model="selectedTalk.abstract" ng-required="true"></textarea>
+
+                                    <div class="ui corner label">
+                                        <i class="icon asterisk"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button ng-disabled="tForm.$invalid" ng-class="disabled(tForm.$invalid)" class="ui small blue submit button" ng-click="save()">Save</button>
+                            <button class="ui small button" ng-click="cancel()">
+                                cancel
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row" style="margin-top:50px ;" ng-show="!form" >
             <div class="column">
                 <div class="ui  talks">
                     <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse" ng-show="talk.status!=5">
@@ -32,9 +151,10 @@
                             {{talk.abstract}}
                             <div class="cbutton_action" style="float : right">
                                 <div class="ui icon blue small buttons">
-                                    <button class="ui button" ng-show="talk.status==1" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
+                                    <button class="ui button" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
                                     <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,2)"><i class="checkmark sign icon"></i></button>
-                                    <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,5)"><i class="trash icon"></i></button>
+                                    <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3)"><i class="checkmark sign icon"></i></button>
+                                    <button class="ui button" ng-click="changeStatus(talk,5)"><i class="trash icon"></i></button>
                                 </div>
                             </div>
                         </div>

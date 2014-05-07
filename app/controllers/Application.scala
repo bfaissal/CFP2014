@@ -52,6 +52,7 @@ object Application extends Controller with MongoController {
   def profile = Action {
     Ok(views.html.profile("JMaghreb"))
   }
+
   def revProfile = Action {
     Ok(views.html.revProfile("JMaghreb"))
   }
@@ -59,6 +60,7 @@ object Application extends Controller with MongoController {
   def admin() = AdminAction {
     Ok(views.html.admin("JMaghreb")).withCookies()
   }
+
   def adminTalks() = AdminAction {
     Ok(views.html.adminTalks("JMaghreb")).withCookies()
   }
@@ -197,7 +199,7 @@ object Application extends Controller with MongoController {
           cursor.headOption.map(value => {
             value.map(content => {
               val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune
-                andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune  )
+                andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune)
               println(sessionUser)
               Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
             }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
@@ -249,18 +251,20 @@ object Application extends Controller with MongoController {
       })
     }
   }
+
   def saveProfile = Action.async {
     implicit request => {
       request.body.asJson.flatMap {
         json => {
           session.get("user").map(connectedUser => {
             val newJson = json.transform((__ \ '_id).json.prune andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
-            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), Json.obj("$set"->newJson)).map(_ => Ok(Messages("registration.save.message")))
+            collection.update(Json.obj(("_id" -> Json.parse(connectedUser) \ "_id")), Json.obj("$set" -> newJson)).map(_ => Ok(Messages("registration.save.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
     }
   }
+
   def saveReviewer = ReviewAction.async {
     implicit request => {
       request.body.asJson.flatMap {
@@ -291,6 +295,7 @@ object Application extends Controller with MongoController {
 
     }
   }
+
   def allTalks() = AdminAction.async {
     implicit request => {
       session.get("user").map(user => {
@@ -308,6 +313,7 @@ object Application extends Controller with MongoController {
 
     }
   }
+
   def acceptedTalks() = AdminAction.async {
     implicit request => {
       session.get("user").map(user => {
@@ -357,6 +363,32 @@ object Application extends Controller with MongoController {
               }
 
             }
+
+          })
+        }
+      }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+    }
+  }
+
+  def adminEditTalk = AdminAction.async {
+    implicit request => {
+      request.body.asJson.flatMap {
+        json => {
+          session.get("user").map(user => {
+            val userJson = Json.parse(user)
+
+
+            val query = Json.obj(("_id" -> json \ "_id"))
+            val generateUpdated = (__ \ 'updated \ '$date).json.put(JsNumber((new java.util.Date).getTime))
+            val generateUpdatedBy = (__ \ 'updated \ 'by).json.put(userJson \ "_id")
+            val res = json.transform(__.json.update(generateUpdated) andThen generateUpdatedBy andThen (__ \ '_id).json.prune
+              andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
+            println(query)
+            println("----------")
+            println(res.get)
+            talks.update(query, Json.obj(("$set" -> res.get))).map(lastError =>
+              Ok(Messages("talk.creationsuccess.message")))
+
 
           })
         }

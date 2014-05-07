@@ -13,6 +13,7 @@ GET         /talks                                         controllers.Applicati
 GET         /allTalks                                      controllers.Application.allTalks
 GET         /acceptedTalks                                 controllers.Application.acceptedTalks
 POST        /editTalk                                      controllers.Application.editTalk
+POST        /adminEditTalk                                 controllers.Application.adminEditTalk
 GET         /logout                                        controllers.Application.logout
 POST        /logout                                        controllers.Application.logout
 GET         /profile                                       controllers.Application.profile
