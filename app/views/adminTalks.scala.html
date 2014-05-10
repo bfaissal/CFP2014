@@ -142,19 +142,21 @@
         <div class="row" style="margin-top:50px ;" ng-show="!form" >
             <div class="column">
                 <div class="ui  talks">
-                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse" ng-show="talk.status!=5">
+                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse">
                         <div ng-show="talk.status==2" class="ui blue ribbon label">Completed</div>
                         <div ng-show="talk.status==3" class="ui green ribbon label">Accepted</div>
                         <div ng-show="talk.status==4" class="ui red ribbon label">Rejected</div>
+                        <div ng-show="talk.status==5" class="ui red ribbon label">Deleted</div>
                         <h2>{{talk.title}}</h2>
                         <div class="content">
                             {{talk.abstract}}
                             <div class="cbutton_action" style="float : right">
                                 <div class="ui icon blue small buttons">
-                                    <button class="ui button" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
+                                    <button class="ui button" ng-show="talk.status!=5" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
                                     <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,2)"><i class="checkmark sign icon"></i></button>
                                     <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3)"><i class="checkmark sign icon"></i></button>
-                                    <button class="ui button" ng-click="changeStatus(talk,5)"><i class="trash icon"></i></button>
+                                    <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,4)"><i class="level down sign icon"></i></button>
+                                    <button class="ui button" ng-show="talk.status!=5" ng-click="changeStatus(talk,5)"><i class="trash icon"></i></button>
                                 </div>
                             </div>
                         </div>

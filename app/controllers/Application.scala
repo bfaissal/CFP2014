@@ -346,7 +346,7 @@ object Application extends Controller with MongoController {
               // creation
               case _: JsUndefined => {
 
-                val generateCreated = (__ \ 'created \ '$date).json.put(JsNumber((new java.util.Date).getTime))
+                val generateCreated = (__ \ 'created \ 'date).json.put(JsNumber((new java.util.Date).getTime))
                 val addMongoIdAndDate: Reads[JsObject] = __.json.update((generateId and generateCreated).reduce)
                 val res = json.transform(addMongoIdAndDate andThen (__ \ 'loading).json.prune).get
                 talks.insert(res ++ Json.obj(("speaker" -> userJson.as[JsObject]))).map(lastError => {
@@ -356,7 +356,7 @@ object Application extends Controller with MongoController {
               // edit
               case value: JsValue => {
                 val query = Json.obj(("_id" -> value), ("speaker.id" -> userJson \ "id"), ("status" -> 1))
-                val generateUpdated = (__ \ 'updated \ '$date).json.put(JsNumber((new java.util.Date).getTime))
+                val generateUpdated = (__ \ 'updated \ 'date).json.put(JsNumber((new java.util.Date).getTime))
                 val res = json.transform(__.json.update(generateUpdated) andThen (__ \ '_id).json.prune andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
                 talks.update(query, Json.obj(("$set" -> res.get))).map(lastError =>
                   Ok(Messages("talk.creationsuccess.message")))
@@ -373,21 +373,25 @@ object Application extends Controller with MongoController {
   def adminEditTalk = AdminAction.async {
     implicit request => {
       request.body.asJson.flatMap {
-        json => {
+        myJson => {
           session.get("user").map(user => {
             val userJson = Json.parse(user)
 
-
-            val query = Json.obj(("_id" -> json \ "_id"))
-            val generateUpdated = (__ \ 'updated \ '$date).json.put(JsNumber((new java.util.Date).getTime))
+            println(myJson)
+            val query = Json.obj(("_id" -> myJson \ "_id"))
+            val generateUpdated = (__ \ 'updated \ 'date).json.put(JsNumber((new java.util.Date).getTime))
             val generateUpdatedBy = (__ \ 'updated \ 'by).json.put(userJson \ "_id")
-            val res = json.transform(__.json.update(generateUpdated) andThen generateUpdatedBy andThen (__ \ '_id).json.prune
+            val res = myJson.transform(__.json.update(generateUpdated) andThen __.json.update(generateUpdatedBy) andThen (__ \ '_id).json.prune
               andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
             println(query)
             println("----------")
             println(res.get)
-            talks.update(query, Json.obj(("$set" -> res.get))).map(lastError =>
-              Ok(Messages("talk.creationsuccess.message")))
+            talks.update(query, Json.obj(("$set" -> res.get))).map(lastError => {
+              //val ty = Json.obj("_id" -> res.get \ "speaker" )
+              println("speaker = "+(res.get \ "speaker"\"_id"))
+              val c = collection.update(Json.obj("_id" -> res.get \ "speaker"\"_id" ),Json.obj("$set"->Json.obj("accepted"-> true)))
+              Ok(Messages("talk.creationsuccess.message"))
+            })
 
 
           })
