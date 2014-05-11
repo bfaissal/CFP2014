@@ -154,7 +154,7 @@
                                 <div class="ui icon blue small buttons">
                                     <button class="ui button" ng-show="talk.status!=5" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
                                     <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,2)"><i class="checkmark sign icon"></i></button>
-                                    <button class="ui button"  ng-click="changeStatus(talk,3)"><i class="checkmark sign icon"></i></button>
+                                    <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3)"><i class="checkmark sign icon"></i></button>
                                     <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,4)"><i class="level down sign icon"></i></button>
                                     <button class="ui button" ng-show="talk.status!=5" ng-click="changeStatus(talk,5)"><i class="trash icon"></i></button>
                                 </div>
