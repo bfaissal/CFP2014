@@ -200,7 +200,6 @@ object Application extends Controller with MongoController {
             value.map(content => {
               val sessionUser = content.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune
                 andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune)
-              println(sessionUser)
               Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
             }).getOrElse(BadRequest(Messages("1globals.serverInternalError.message")))
           })
@@ -211,10 +210,11 @@ object Application extends Controller with MongoController {
 
 
   def speaker(email: String) = Action.async {
-    val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> email))).cursor[JsObject]
+    val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> email)),
+    Json.obj(("fname"->1),("lname"->1),("image"->1),("_id"->1),("bio"->1),("twitter"->1))).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
-        val sessionUser = content.transform(((__ \ 'fname).json.pickBranch and (__ \ 'lname).json.pickBranch and (__ \ 'image).json.pickBranch).reduce)
+        val sessionUser = content.transform( (__ \ 'id).json.prune)
         Ok(sessionUser.get)
       }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
     })
@@ -331,7 +331,7 @@ object Application extends Controller with MongoController {
 
     }
   }
-  def acceptedSpeakerss() = Action.async {
+  def acceptedSpeakers() = Action.async {
     implicit request => {
       session.get("user").map(user => {
         val userJson = Json.parse(user)
@@ -423,6 +423,7 @@ object Application extends Controller with MongoController {
               })
 
 
+              collection.update(Json.obj("_id" -> res.get \ "speaker"\"_id" ),Json.obj("$set"->Json.obj("accepted"-> true)))
               collection.update(Json.obj("_id" -> res.get \ "speaker"\"_id" ),Json.obj("$set"->Json.obj("accepted"-> true)))
               Ok(Messages("talk.creationsuccess.message"))
             })

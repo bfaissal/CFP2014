@@ -12,7 +12,7 @@ GET         /proposals                                     controllers.Applicati
 GET         /talks                                         controllers.Application.talksList
 GET         /allTalks                                      controllers.Application.allTalks
 GET         /acceptedTalks                                 controllers.Application.acceptedTalks
-GET         /acceptedSpeakerss                             controllers.Application.acceptedSpeakerss
+GET         /acceptedSpeakers                              controllers.Application.acceptedSpeakers
 POST        /editTalk                                      controllers.Application.editTalk
 POST        /adminEditTalk                                 controllers.Application.adminEditTalk
 GET         /logout                                        controllers.Application.logout
