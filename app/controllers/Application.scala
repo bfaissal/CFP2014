@@ -202,7 +202,7 @@ object Application extends Controller with MongoController {
                 andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune)
               println(sessionUser)
               Ok(sessionUser.get).withSession(("user", sessionUser.get.toString()))
-            }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
+            }).getOrElse(BadRequest(Messages("1globals.serverInternalError.message")))
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
@@ -355,7 +355,7 @@ object Application extends Controller with MongoController {
               }
               // edit
               case value: JsValue => {
-                val query = Json.obj(("_id" -> value), ("speaker.id" -> userJson \ "id"), ("status" -> 1))
+                val query = Json.obj(("_id" -> value), ("speaker._id" -> userJson \ "_id"), ("status" -> 1))
                 val generateUpdated = (__ \ 'updated \ 'date).json.put(JsNumber((new java.util.Date).getTime))
                 val res = json.transform(__.json.update(generateUpdated) andThen (__ \ '_id).json.prune andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
                 talks.update(query, Json.obj(("$set" -> res.get))).map(lastError =>
@@ -376,20 +376,32 @@ object Application extends Controller with MongoController {
         myJson => {
           session.get("user").map(user => {
             val userJson = Json.parse(user)
-
-            println(myJson)
             val query = Json.obj(("_id" -> myJson \ "_id"))
             val generateUpdated = (__ \ 'updated \ 'date).json.put(JsNumber((new java.util.Date).getTime))
             val generateUpdatedBy = (__ \ 'updated \ 'by).json.put(userJson \ "_id")
             val res = myJson.transform(__.json.update(generateUpdated) andThen __.json.update(generateUpdatedBy) andThen (__ \ '_id).json.prune
               andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
-            println(query)
-            println("----------")
-            println(res.get)
             talks.update(query, Json.obj(("$set" -> res.get))).map(lastError => {
-              //val ty = Json.obj("_id" -> res.get \ "speaker" )
-              println("speaker = "+(res.get \ "speaker"\"_id"))
-              val c = collection.update(Json.obj("_id" -> res.get \ "speaker"\"_id" ),Json.obj("$set"->Json.obj("accepted"-> true)))
+
+              val cursor: Cursor[JsObject] = collection.find(Json.obj("_id" -> res.get \ "speaker"\"_id" )).cursor[JsObject]
+              cursor.headOption.map(value => {
+                value.map(content => {
+                  println("myJson = "+(myJson\"title").as[String])
+                  if((myJson \ "status").as[Int]==3){
+                    MailUtil.send((content \"id").as[String], Messages("talks.accepted.subject"),
+                      Messages("talks.accepted.body",(content\"fname").as[String],(myJson\"title").as[String]),
+                      (content\"fname").as[String])
+                  }
+                  if((myJson \ "status").as[Int]==4){
+                    MailUtil.send((content \"id").as[String], Messages("talks.rejected.subject"),
+                      Messages("talks.rejected.body",(content\"fname").as[String],(myJson\"title").as[String]),
+                      (content\"fname").as[String])
+                  }
+                })
+              })
+
+
+              collection.update(Json.obj("_id" -> res.get \ "speaker"\"_id" ),Json.obj("$set"->Json.obj("accepted"-> true)))
               Ok(Messages("talk.creationsuccess.message"))
             })
 
