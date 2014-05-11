@@ -365,7 +365,8 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         $scope.edition = false;
         $scope.selectedTalk.status = 1;
     }
-    $scope.save = function () {
+    $scope.saveTalk = function () {
+
         $scope.selectedTalk.loading = true;
         $http.post("/adminEditTalk", JSON.stringify($scope.selectedTalk)).error(function (error) {
 
