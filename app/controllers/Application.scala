@@ -211,10 +211,10 @@ object Application extends Controller with MongoController {
 
   def speaker(email: String) = Action.async {
     val cursor: Cursor[JsObject] = collection.find(Json.obj(("id" -> email)),
-    Json.obj(("fname"->1),("lname"->1),("image"->1),("_id"->1),("bio"->1),("twitter"->1))).cursor[JsObject]
+      Json.obj(("fname" -> 1), ("lname" -> 1), ("image" -> 1), ("_id" -> 1), ("bio" -> 1), ("twitter" -> 1))).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
-        val sessionUser = content.transform( (__ \ 'id).json.prune)
+        val sessionUser = content.transform((__ \ 'id).json.prune)
         Ok(sessionUser.get)
       }).getOrElse(BadRequest(Messages("globals.serverInternalError.message")))
     })
@@ -331,6 +331,7 @@ object Application extends Controller with MongoController {
 
     }
   }
+
   def acceptedSpeakers() = Action.async {
     implicit request => {
       session.get("user").map(user => {
@@ -392,6 +393,24 @@ object Application extends Controller with MongoController {
     }
   }
 
+  def emailSpeaker(myJson: JsValue, id: JsValue) = {
+    val cursor: Cursor[JsObject] = collection.find(Json.obj("_id" -> id)).cursor[JsObject]
+    cursor.headOption.map(value => {
+      value.map(content => {
+        if ((myJson \ "status").as[Int] == 3) {
+          MailUtil.send((content \ "id").as[String], Messages("talks.accepted.subject"),
+            Messages("talks.accepted.body", (content \ "fname").as[String], (myJson \ "title").as[String]),
+            (content \ "fname").as[String])
+        }
+        if ((myJson \ "status").as[Int] == 4) {
+          MailUtil.send((content \ "id").as[String], Messages("talks.rejected.subject"),
+            Messages("talks.rejected.body", (content \ "fname").as[String], (myJson \ "title").as[String]),
+            (content \ "fname").as[String])
+        }
+      })
+    })
+  }
+
   def adminEditTalk = AdminAction.async {
     implicit request => {
       request.body.asJson.flatMap {
@@ -404,27 +423,17 @@ object Application extends Controller with MongoController {
             val res = myJson.transform(__.json.update(generateUpdated) andThen __.json.update(generateUpdatedBy) andThen (__ \ '_id).json.prune
               andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
             talks.update(query, Json.obj(("$set" -> res.get))).map(lastError => {
+              emailSpeaker(myJson, res.get \ "speaker" \ "_id")
 
-              val cursor: Cursor[JsObject] = collection.find(Json.obj("_id" -> res.get \ "speaker"\"_id" )).cursor[JsObject]
-              cursor.headOption.map(value => {
-                value.map(content => {
-                  println("myJson = "+(myJson\"title").as[String])
-                  if((myJson \ "status").as[Int]==3){
-                    MailUtil.send((content \"id").as[String], Messages("talks.accepted.subject"),
-                      Messages("talks.accepted.body",(content\"fname").as[String],(myJson\"title").as[String]),
-                      (content\"fname").as[String])
-                  }
-                  if((myJson \ "status").as[Int]==4){
-                    MailUtil.send((content \"id").as[String], Messages("talks.rejected.subject"),
-                      Messages("talks.rejected.body",(content\"fname").as[String],(myJson\"title").as[String]),
-                      (content\"fname").as[String])
-                  }
-                })
-              })
+              collection.update(Json.obj("_id" -> res.get \ "speaker" \ "_id"), Json.obj("$set" -> Json.obj("accepted" -> true)))
+              (res.get \ "otherSpeakers").as[List[JsObject]].map {
+                os: JsObject => {
+                  println("os = " + os)
+                  collection.update(Json.obj("_id" -> Json.obj(("$oid" -> os \ "id"))), Json.obj("$set" -> Json.obj("accepted" -> true)))
+                  emailSpeaker(myJson, Json.obj(("$oid" -> os \ "id")))
+                }
+              }
 
-
-              collection.update(Json.obj("_id" -> res.get \ "speaker"\"_id" ),Json.obj("$set"->Json.obj("accepted"-> true)))
-              collection.update(Json.obj("_id" -> res.get \ "speaker"\"_id" ),Json.obj("$set"->Json.obj("accepted"-> true)))
               Ok(Messages("talk.creationsuccess.message"))
             })
 

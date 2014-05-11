@@ -237,6 +237,9 @@ jmaghreb.controller('talksCtrl', function ($scope, $http) {
             speaker.fname = data.fname
             speaker.lname = data.lname
             speaker.image = data.image
+            speaker.bio = data.bio
+            speaker.twitter = data.twitter
+            speaker.id = data._id.$oid
         })
     }
     $scope.addSpeaker = function(){
