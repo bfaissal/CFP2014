@@ -13,7 +13,7 @@ fp.email.subject=JMaghreb CFP: Password reset
 fp.email.body=<p>You have recently requested a new password.</p><p>Please log in to the JMaghreb CFP at http://cfp.jmaghreb.io using the following temporary password:</p><p>{0}</p><p>If you require assistance, please contact us at info@jmaghreb.io</p>
 forgetpassword.activation.success.message=An email with a temporary password has been sent to your email.
 talks.rejected.subject=Your JMaghreb 2014 presentation was declined
-talks.rejected.body=<p>Dear {0},</p><p>We want to notify you that your "{1}" presentation was not selected for JMaghreb 2014.</p><p>Thank you for your submission and we still hope we can welcome at JMaghreb 2014!</p>\
+talks.rejected.body=<p>Dear {0},</p><p>We want to notify you that your "{1}" presentation was not selected for JMaghreb 2014.</p><p>Thank you for your submission and we still hope we can welcome you at JMaghreb 2014!</p>\
     <p>Kind regards,<br/>The JMaghreb Team</p>
 talks.accepted.subject=Your JMaghreb 2014 presentation was accepted
 talks.accepted.body=<p>Dear {0},</p><p>We want to notify you that your "{1}" presentation was selected for JMaghreb 2014.</p><p>Thank you for your submission and see you at JMaghreb 2014!</p>\
