@@ -149,7 +149,14 @@
                         <div ng-show="talk.status==5" class="ui red ribbon label">Deleted</div>
                         <h2>{{talk.title}}</h2>
                         <div class="content">
-                            {{talk.abstract}}
+                            <p>
+                                <img src="{{talk.speaker.image}}" style="width: 100px;" >
+                                {{talk.speaker.fname}},{{talk.speaker.fname}}</p>
+                            <p>
+                                <b>Track: </b>{{talk.track.label}}      <br/>
+                                {{talk.abstract}}
+                            </p>
+
                             <div class="cbutton_action" style="float : right">
                                 <div class="ui icon blue small buttons">
                                     <button class="ui button" ng-show="talk.status!=5" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
