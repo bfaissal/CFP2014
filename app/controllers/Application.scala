@@ -339,8 +339,6 @@ object Application extends Controller with MongoController {
 
   def acceptedTalks() = Action.async {
     implicit request => {
-      session.get("user").map(user => {
-        val userJson = Json.parse(user)
         val query = Json.obj(("status" -> 3))
         val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
         val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
@@ -349,16 +347,11 @@ object Application extends Controller with MongoController {
           persons =>
             Ok(Json.toJson(persons))
         }
-
-      }).getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
-
     }
   }
 
   def acceptedSpeakers() = Action.async {
     implicit request => {
-      session.get("user").map(user => {
-        val userJson = Json.parse(user)
         val query = Json.obj(("accepted" -> true))
         val cursor: Cursor[JsObject] = collection.find(query,
           Json.obj(("fname" -> 1),
@@ -372,9 +365,6 @@ object Application extends Controller with MongoController {
           persons =>
             Ok(Json.toJson(persons))
         }
-
-      }).getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
-
     }
   }
 
