@@ -41,8 +41,9 @@
                             <div class="field">
                                 <label>Language</label>
                                 <div class="ui left labeled icon input">
+
                                     <select ng-model="selectedTalk.language.value" ng-required="true" ng-change="updateValue(selectedTalk.language,'lang')">
-                                        <option value="">...</option>
+                                        <option value="">.....</option>
                                         <option ng-repeat="lang in config.languages | orderBy:predicateList:reverse" value="{{lang.value}}">
                                             {{lang.label}}</option>
                                     </select>

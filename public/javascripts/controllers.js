@@ -92,6 +92,29 @@ jmaghreb.controller('MainCtrl', function ($scope,$rootScope, $http) {
             return "n";
     }
 })
+
+
+jmaghreb.controller('AdminSpeakerCtrl', function ($scope,$rootScope, $http,$timeout) {
+
+    $rootScope.register = {};
+    $scope.disableSave = false;
+    $scope.save = function () {
+        $scope.disableSave = true;
+        $http.post("/createSpeaker", $scope.register).error(function (error) {
+            alert(error)
+        }).success(function (data) {
+                $scope.disableSave = false;
+                $rootScope.saveSuccess = true;
+                $rootScope.loginShow = true;
+                $rootScope.register = {};
+                $scope.registrationForm.$setPristine();
+                alert("Saved successfully ! ");
+                $timeout(function(){$rootScope.saveSuccess = false;},6000)
+            })
+    }
+
+})
+
 jmaghreb.controller('RegistrationCtrl', function ($scope,$rootScope, $http,$timeout) {
 
     $rootScope.register = {};
@@ -385,7 +408,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         if (status == 1 || confirm(message)) {
             $scope.selectedTalk = talk;
             $scope.selectedTalk.status = status;
-            $scope.save();
+            $scope.saveTalk();
         }
     }
     $scope.cancel = function () {

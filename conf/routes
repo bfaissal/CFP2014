@@ -5,6 +5,8 @@
 # Home page
 GET         /                                              controllers.Application.loginPage
 POST        /register                                      controllers.Application.register
+POST        /createSpeaker                                 controllers.Application.createSpeaker
+GET         /adminSpeaker                                  controllers.Application.adminSpeaker
 POST        /upload                                        controllers.Application.upload
 GET         /deleteImage/:id/:action                       controllers.Application.deleteImages(id :String,action :Boolean)
 POST        /login                                         controllers.Application.login
