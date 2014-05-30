@@ -441,7 +441,7 @@ object Application extends Controller with MongoController {
               emailSpeaker(myJson, res.get \ "speaker" \ "_id")
 
               collection.update(Json.obj("_id" -> res.get \ "speaker" \ "_id"), Json.obj("$set" -> Json.obj("accepted" -> true)))
-              println("==> " + (res.get \ "otherSpeakers"))
+              //println("==> " + (res.get \ "otherSpeakers"))
               (res.get \ "otherSpeakers") match {
                 case otherS:JsUndefined =>{}
                 case otherS:JsValue => {
