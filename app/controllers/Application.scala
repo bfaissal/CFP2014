@@ -411,6 +411,7 @@ object Application extends Controller with MongoController {
     val cursor: Cursor[JsObject] = collection.find(Json.obj("_id" -> id)).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
+        println("email to be sent to "+(content \ "id"))
         if ((myJson \ "status").as[Int] == 3) {
           MailUtil.send((content \ "id").as[String], Messages("talks.accepted.subject"),
             Messages("talks.accepted.body", (content \ "fname").as[String], (myJson \ "title").as[String]),
