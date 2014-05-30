@@ -442,6 +442,9 @@ object Application extends Controller with MongoController {
 
               collection.update(Json.obj("_id" -> res.get \ "speaker" \ "_id"), Json.obj("$set" -> Json.obj("accepted" -> true)))
               println("==> " + (res.get \ "otherSpeakers"))
+              (res.get \ "otherSpeakers") match {
+                case otherS:JsUndefined =>{}
+                case otherS:JsValue => {
               (res.get \ "otherSpeakers").as[List[JsObject]].map {
                 os: JsObject => {
                   (os \ "id") match {
@@ -454,6 +457,8 @@ object Application extends Controller with MongoController {
                     }
                   }
                 }
+              }    //--
+              }
               }
               Ok(Messages("talk.creationsuccess.message"))
             })
