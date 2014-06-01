@@ -341,11 +341,11 @@ object Application extends Controller with MongoController {
     implicit request => {
         val query = Json.obj(("status" -> 3))
         val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
-        val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
+        val futureTalksList: Future[List[JsObject]] = cursor.collect[List]()
         //val futurePersonsJsonArray: Future[JsArray] =
-        futurePersonsList.map {
-          persons =>
-            Ok(Json.toJson(persons))
+        futureTalksList.map {
+          talks =>
+            Ok(Json.toJson(Json.obj(("talks" ->talks))))
         }
     }
   }
@@ -363,7 +363,7 @@ object Application extends Controller with MongoController {
         //val futurePersonsJsonArray: Future[JsArray] =
         futurePersonsList.map {
           persons =>
-            Ok(Json.toJson(persons))
+            Ok(Json.toJson(Json.obj(("speakers" ->persons))))
         }
     }
   }
