@@ -97,16 +97,25 @@ jmaghreb.controller('MainCtrl', function ($scope,$rootScope, $http) {
 jmaghreb.controller('AdminSpeakerCtrl', function ($scope,$rootScope, $http,$timeout) {
 
     $rootScope.register = {};
+    $scope.hisTalks = [];
     $scope.disableSave = false;
+    $http.get("/config").success(function (data) {
+        $scope.config = data;
+    })
+    $scope.addTalk = function(){
+        $scope.hisTalks.push({});
+    }
     $scope.save = function () {
         $scope.disableSave = true;
-        $http.post("/createSpeaker", $scope.register).error(function (error) {
+        var speakerWithTalks = {"speaker":$scope.register,"talks":$scope.hisTalks}
+        $http.post("/adminCreateSpeaker", speakerWithTalks).error(function (error) {
             alert(error)
         }).success(function (data) {
                 $scope.disableSave = false;
                 $rootScope.saveSuccess = true;
                 $rootScope.loginShow = true;
                 $rootScope.register = {};
+                $scope.hisTalks = [];
                 $scope.registrationForm.$setPristine();
                 alert("Saved successfully ! ");
                 $timeout(function(){$rootScope.saveSuccess = false;},6000)

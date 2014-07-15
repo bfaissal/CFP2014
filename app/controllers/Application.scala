@@ -46,7 +46,7 @@ object Application extends Controller with MongoController {
   }
 
   def loginPage = Action {
-    Ok(views.html.login("JMaghreb")).withCookies(List(Cookie("test", "test"), Cookie("mtest", "tmmmest")): _*).withHeaders(("3ajibe", "hona"))
+    Ok(views.html.login("JMaghreb",openCFP)).withCookies(List(Cookie("test", "test"), Cookie("mtest", "tmmmest")): _*).withHeaders(("3ajibe", "hona"))
   }
 
   def profile = Action {
@@ -68,9 +68,46 @@ object Application extends Controller with MongoController {
     Ok(views.html.speakerAdmin("JMaghreb"))
   }
   def logout = Action {
-    Ok(views.html.login("JMaghreb")).withNewSession
+    Ok(views.html.login("JMaghreb",openCFP)).withNewSession
   }
 
+  def adminCreateSpeaker = AdminAction.async {
+    implicit request => {
+      request.body.asJson.map {
+        gjson => {
+          val speaker = (gjson \ "speaker")
+
+          val userJson = speaker.transform((__.json.update((__ \ 'actif).json.put(JsNumber(1)))) andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
+          collection.insert(userJson).map(_ => {
+            {
+              val insertedUser = userJson.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune
+                andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune) .get
+              val seqTalks = (gjson \ "talks").as[List[JsValue]]
+              seqTalks.foreach(ajsValue => {
+                val generateCreated = (__ \ 'created \ 'date).json.put(JsNumber((new java.util.Date).getTime))
+                val addMongoIdAndDate: Reads[JsObject] = __.json.update((generateId and generateCreated).reduce)
+
+                val res = ajsValue.transform(addMongoIdAndDate andThen (__.json.update((__ \ 'status).json.put(JsNumber(3)))) andThen (__ \ 'loading).json.prune).get
+                talks.insert(res ++ Json.obj(("speaker" -> insertedUser))).map(lastError => {
+                  resOk(Messages("talk.creationsuccess.message"), res)
+                })
+              })
+            }
+            Ok(Messages("registration.creationsuccess.message", speaker \ "id"))
+          }
+          ).recover {
+            case e: DatabaseException => {
+              e.code match {
+                case Some(11000) => BadRequest(Messages("globals.emailexists.message"))
+                case _ => BadRequest(Messages("globals.serverInternalError.message"))
+              }
+            }
+          }
+
+        }
+      }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
+    }
+  }
   def createSpeaker = Action.async {
     implicit request => {
       request.body.asJson.map {

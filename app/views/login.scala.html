@@ -1,4 +1,4 @@
-@(message: String)
+@(message: String,open: Boolean)
 
 @main("JMaghreb Call For Paper") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +8,12 @@
         <p>
             Welcome to <a href="http://jmaghreb.io/en" target="_blank">JMaghreb</a> call for paper.
             <div class="post_body">
+                @if(open){
                 <p>Register or login to submit a proposal. <br/>Further information about the tracks are available here: <a href="http://moroccojug.org/site/blog/85-jmaghreb-3rd-in-a-nutshell.html" target="_blank">http://moroccojug.org/site/blog/85-jmaghreb-3rd-in-a-nutshell.html</a></p>
                 <p>This call for paper is open till <b>July 15th 2014</b>.</p>
-                <!--<p>This year's call for paper is closed. Thank you very much for you interest, if you need any information or support contact JMaghreb Team at <a href="mailto:info@@jmaghreb.io">info@@jmaghreb.io</a></p>-->
+                }else{
+                <p>This year's call for paper is closed. Thank you very much for you interest, if you need any information or support contact JMaghreb Team at <a href="mailto:info@@jmaghreb.io">info@@jmaghreb.io</a></p>
+                }
             </div>
         </p>
 
