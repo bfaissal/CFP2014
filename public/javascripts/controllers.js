@@ -105,6 +105,12 @@ jmaghreb.controller('AdminSpeakerCtrl', function ($scope,$rootScope, $http,$time
     $scope.addTalk = function(){
         $scope.hisTalks.push({});
     }
+    $scope.disabled = function(disabled){
+        if(disabled)
+            return "disabled";
+        else
+            return "";
+    }
     $scope.save = function () {
         $scope.disableSave = true;
         var speakerWithTalks = {"speaker":$scope.register,"talks":$scope.hisTalks}
