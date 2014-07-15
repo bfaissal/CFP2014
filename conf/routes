@@ -33,5 +33,7 @@ GET         /activateAccount/:email/:activationCode        controllers.Applicati
 GET         /revAct/:email/:activationCode                 controllers.Application.reviewerActivation(email:String,activationCode:String)
 POST        /createRev/:mail                               controllers.Application.createReviewer(mail:String)
 POST        /fp/:mail                                      controllers.Application.forgetPassword(mail:String)
+GET         /admin/open                                    controllers.Application.open
+GET         /admin/close                                   controllers.Application.close
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                  controllers.Assets.at(path="/public", file)

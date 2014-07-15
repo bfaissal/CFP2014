@@ -42,7 +42,7 @@ object Application extends Controller with MongoController {
 
 
   def index() = Action {
-    Ok(views.html.index("JMaghreb",false))
+    Ok(views.html.index("JMaghreb",openCFP))
   }
 
   def loginPage = Action {
@@ -371,13 +371,21 @@ object Application extends Controller with MongoController {
   def resOk(message: String, data: JsValue) = {
     Ok(Json.obj("message" -> message) ++ Json.obj("data" -> data))
   }
-
+  var openCFP:Boolean = false
+  def close = AdminAction.async {
+    openCFP = false;
+    Future.successful(Ok("Closed"))
+  }
+  def open = AdminAction.async {
+    openCFP = true;
+    Future.successful(Ok("Opened"))
+  }
   def editTalk = Action.async {
     implicit request => {
       request.body.asJson.flatMap {
         json => {
           session.get("user").map(user => {
-            if(false){
+            if(openCFP){
             val userJson = Json.parse(user)
             json \ "_id" match {
               // creation
