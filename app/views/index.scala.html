@@ -1,4 +1,4 @@
-@(message: String)
+@(message: String,open: Boolean)
 
 @main("JMaghreb Call For Paper") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -145,10 +145,12 @@
         <div class="ui one column grid show-hide-animation" ng-show="!form" style="margin : 0% ;">
             <div class="row " >
                 <div class="column">
+                    @if(open){
                     <div class="ui small button" ng-click="add()">
                         <i class="add sign box icon"></i>
                         Add
                     </div>
+                    }
                 </div>
             </div>
             <div class="row">
@@ -161,13 +163,15 @@
                             <h2>{{talk.title}}</h2>
                             <div class="content">
                                 {{talk.abstract}}
-                                <div class="cbutton_action" style="float : right">
-                                    <div class="ui icon blue small buttons">
-                                        <button class="ui button" ng-show="talk.status==1" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
-                                        <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,2)"><i class="checkmark sign icon"></i></button>
-                                        <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,5)"><i class="trash icon"></i></button>
+                                @if(open){
+                                    <div class="cbutton_action" style="float : right">
+                                        <div class="ui icon blue small buttons">
+                                            <button class="ui button" ng-show="talk.status==1" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
+                                            <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,2)"><i class="checkmark sign icon"></i></button>
+                                            <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,5)"><i class="trash icon"></i></button>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             </div>
                             <div class="ui right blue corner label" ng-show="talk.loading">
                                 <i class="loading icon"></i>
@@ -183,10 +187,12 @@
             </div>
             <div class="row" ng-show="!form">
                 <div class="column">
+                @if(open){
                     <div class="ui small button" ng-click="add()">
                         <i class="add sign box icon"></i>
                         Add
                     </div>
+                }
                     <br/>
                         &nbsp;
                 </div>

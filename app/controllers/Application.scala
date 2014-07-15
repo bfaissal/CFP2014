@@ -42,7 +42,7 @@ object Application extends Controller with MongoController {
 
 
   def index() = Action {
-    Ok(views.html.index("JMaghreb"))
+    Ok(views.html.index("JMaghreb",false))
   }
 
   def loginPage = Action {
@@ -377,6 +377,7 @@ object Application extends Controller with MongoController {
       request.body.asJson.flatMap {
         json => {
           session.get("user").map(user => {
+            if(false){
             val userJson = Json.parse(user)
             json \ "_id" match {
               // creation
@@ -399,7 +400,10 @@ object Application extends Controller with MongoController {
               }
 
             }
-
+          }
+            else{
+              Future.successful(BadRequest("Call for paper closed"))
+            }
           })
         }
       }.getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
