@@ -476,7 +476,7 @@ object Application extends Controller with MongoController {
     })
   }
 
-  def adminEditTalk = AdminAction.async {
+  def adminEditTalk(email:Boolean) = AdminAction.async {
     implicit request => {
       request.body.asJson.flatMap {
         myJson => {
@@ -489,7 +489,7 @@ object Application extends Controller with MongoController {
             val res = myJson.transform(__.json.update(generateUpdated) andThen __.json.update(generateUpdatedBy) andThen (__ \ '_id).json.prune
               andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
             talks.update(query, Json.obj(("$set" -> res.get))).map(lastError => {
-              emailSpeaker(myJson, res.get \ "speaker" \ "_id")
+              if(email) emailSpeaker(myJson, res.get \ "speaker" \ "_id")
 
               collection.update(Json.obj("_id" -> res.get \ "speaker" \ "_id"), Json.obj("$set" -> Json.obj("accepted" -> true)))
               //println("==> " + (res.get \ "otherSpeakers"))
@@ -503,7 +503,7 @@ object Application extends Controller with MongoController {
                     case v: JsValue => {
                       if (!v.as[String].eq("")) {
                         collection.update(Json.obj("_id" -> Json.obj(("$oid" -> os \ "id"))), Json.obj("$set" -> Json.obj("accepted" -> true)))
-                        emailSpeaker(myJson, Json.obj(("$oid" -> os \ "id")))
+                        if(email) emailSpeaker(myJson, Json.obj(("$oid" -> os \ "id")))
                       }
                     }
                   }

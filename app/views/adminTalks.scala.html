@@ -42,8 +42,48 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="field">
-                                <label>Language</label>
+                                <label>Schedule</label>
+                            <div class="cbutton_action" style="float : left">
+                                <div>from <select ng-model="selectedTalk.from.h">
+                                    <option value=""></option>
+                                    <option ng-repeat="h in hours" value="{{h}}">{{h}}</option>
+                                </select>
+                                    <select ng-model="selectedTalk.from.m">
+                                        <option value=""></option>
+                                        <option ng-repeat="h in minutes" value="{{h}}">{{h}}</option>
+                                    </select>
+                                </div>
+                                <div>to
+                                    <select ng-model="selectedTalk.to.h">
+                                        <option value=""></option>
+                                        <option ng-repeat="h in hours" value="{{h}}">{{h}}</option>
+                                    </select>
+                                    <select ng-model="selectedTalk.to.m">
+                                        <option value=""></option>
+                                        <option ng-repeat="h in minutes" value="{{h}}">{{h}}</option>
+                                    </select>
+                                </div>
+                                <div>Day
+                                    <select ng-model="selectedTalk.day.value" ng-change="updateValue(selectedTalk.day,'confDays')">
+                                        <option value=""></option>
+                                        <option ng-repeat="h in config.confDays" value="{{h.value}}">{{h.label}}</option>
+                                    </select>
+                                </div>
+                                <div>Room
+
+                                    <select ng-model="selectedTalk.room.value" ng-change="updateValue(selectedTalk.room,'room')">
+                                        <option value=""></option>
+                                        <option ng-repeat="r in config.rooms" value="{{r.value}}">{{r.label}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            </div>
+
+
+                            <div class="field">
+
                                 <div class="ui left labeled icon input">
                                     <select ng-model="selectedTalk.language.value" ng-required="true" ng-change="updateValue(selectedTalk.language,'lang')">
                                         <option value="">...</option>

@@ -17,7 +17,7 @@ GET         /allTalks                                      controllers.Applicati
 GET         /acceptedTalks                                 controllers.Application.acceptedTalks
 GET         /acceptedSpeakers                              controllers.Application.acceptedSpeakers
 POST        /editTalk                                      controllers.Application.editTalk
-POST        /adminEditTalk                                 controllers.Application.adminEditTalk
+POST        /adminEditTalk                                 controllers.Application.adminEditTalk(email:Boolean ?= false)
 GET         /logout                                        controllers.Application.logout
 POST        /logout                                        controllers.Application.logout
 GET         /profile                                       controllers.Application.profile

@@ -189,6 +189,7 @@ jmaghreb.controller('talksCtrl', function ($scope, $http) {
     $scope.predicate = 'title'
     $scope.predicateList ='order'
     $scope.reverse = false;
+
     $http.get("/config").success(function (data) {
         $scope.config = data;
     })
@@ -221,6 +222,7 @@ jmaghreb.controller('talksCtrl', function ($scope, $http) {
             })
         $scope.cancel();
     }
+
     $scope.changeStatus = function (talk, status) {
         var message = status == 2 ? 'Do you want to complete this talk ?' : 'Do you want to delete this talk ?'
         if (status == 1 || confirm(message)) {
@@ -302,6 +304,20 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     $scope.predicate = 'order'
     saveSuccess = false;
     $scope.reverse = false;
+    $scope.hours = [];
+
+    $scope.minutes = [];
+    $scope.minutes.push("00")
+    for(i= 1; i <4 ; i++) {
+        $scope.minutes.push(i*15)
+    }
+    for(i = 8; i < 20 ; i++){
+        if(i < 10)
+            $scope.hours.push("0"+i)
+        else
+            $scope.hours.push(i)
+
+    }
     $http.get("/config").success(function (data) {
         $scope.config = data;
         $scope.initLists();
@@ -403,10 +419,14 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         $scope.edition = false;
         $scope.selectedTalk.status = 1;
     }
-    $scope.saveTalk = function () {
-
+    $scope.schedule = function (talk) {
+        $scope.selectedTalk = talk;
+        $scope.saveTalk();
+    }
+    $scope.saveTalk = function (sendEmail) {
+        if(!sendEmail) sendEmail = false;
         $scope.selectedTalk.loading = true;
-        $http.post("/adminEditTalk", JSON.stringify($scope.selectedTalk)).error(function (error) {
+        $http.post("/adminEditTalk?email="+sendEmail, JSON.stringify($scope.selectedTalk)).error(function (error) {
 
             $scope.selectedTalk.error = true;
         }).success(function (data) {
@@ -423,7 +443,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         if (status == 1 || confirm(message)) {
             $scope.selectedTalk = talk;
             $scope.selectedTalk.status = status;
-            $scope.saveTalk();
+            $scope.saveTalk(status == 3);
         }
     }
     $scope.cancel = function () {
@@ -431,6 +451,38 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         $scope.form = false;
         $scope.edition = false;
     }
+
+    $scope.updateValue = function(item,type){
+        function updateLabel(list){
+            for(a in list){
+                if(list[a].value == item.value){
+                    item.label = list[a].label;
+                    break;
+                }
+            }
+        }
+        switch (type) {
+            case 'lang':
+                updateLabel($scope.config.languages)
+                break;
+            case 'confDays':
+                updateLabel($scope.config.confDays)
+                break;
+            case 'room':
+                updateLabel($scope.config.rooms)
+                break;
+            case 'type':
+                updateLabel($scope.config.sessionTypes)
+                break;
+            case 'track':
+                updateLabel($scope.config.tracks)
+                break;
+            case 'exp':
+                updateLabel($scope.config.audienceExperiences)
+                break;
+        }
+    }
+
 })
 
 jmaghreb.config(function ($routeProvider) {
