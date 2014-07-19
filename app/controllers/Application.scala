@@ -389,19 +389,26 @@ object Application extends Controller with MongoController {
 
   def acceptedSpeakers() = Action.async {
     implicit request => {
-        val query = Json.obj(("accepted" -> true))
-        val cursor: Cursor[JsObject] = collection.find(query,
-          Json.obj(("fname" -> 1),
-            ("lname" -> 1),
-            ("bio" -> 1),
-            ("image" -> 1),
-            ("twitter" -> 1))).cursor[JsObject]
-        val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
-        //val futurePersonsJsonArray: Future[JsArray] =
-        futurePersonsList.map {
-          persons =>
-            Ok(Json.toJson(Json.obj(("speakers" ->persons))))
-        }
+      val query = Json.obj(("accepted" -> true))
+      val cursor: Cursor[JsObject] = collection.find(query,
+        Json.obj(("fname" -> 1),
+          ("lname" -> 1),
+          ("bio" -> 1),
+          ("image" -> 1),
+          ("twitter" -> 1))).cursor[JsObject]
+
+      cursor.enumerate().run(Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aSpeaker) => {
+        talks.find(Json.obj(("speaker._id" -> aSpeaker \ "_id"))).cursor[JsObject]
+          .collect[List]().map(myTalks => {
+          val traks = myTalks.foldLeft[Set[JsValue]](Set[JsValue]())((aSet,aTalkx) => aSet + aTalkx \ "track" \ "value" )
+
+          theList :+ aSpeaker.transform(__.json.update((__ \ 'talks).json.put(JsArray.apply(myTalks))) andThen
+            __.json.update((__ \ 'tracks).json.put(JsArray(traks.toSeq))) ).get
+        })
+      })).map(
+        persons =>
+          Ok(Json.toJson(Json.obj(("speakers" -> persons))))
+      )
     }
   }
 
