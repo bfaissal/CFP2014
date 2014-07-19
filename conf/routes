@@ -15,6 +15,7 @@ GET         /proposals                                     controllers.Applicati
 GET         /talks                                         controllers.Application.talksList
 GET         /allTalks                                      controllers.Application.allTalks
 GET         /fixTalks                                      controllers.Application.fixTalks
+GET         /fixTalksLangs                                 controllers.Application.fixTalksLangs
 GET         /acceptedTalks                                 controllers.Application.acceptedTalks
 GET         /acceptedSpeakers                              controllers.Application.acceptedSpeakers
 POST        /editTalk                                      controllers.Application.editTalk

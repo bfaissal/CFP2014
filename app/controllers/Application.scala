@@ -445,6 +445,61 @@ object Application extends Controller with MongoController {
     }
   }
 
+  def fixTalksLangs() = AdminAction.async {
+    implicit request => {
+      val query = Json.obj(("status" -> 3))
+      talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+        .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
+
+
+        config.find(Json.obj()).cursor[JsObject].headOption.map( aconfigOption =>{
+          println("aconfigOption = ")
+          aconfigOption.map( aConfig => {
+
+            val theLang = (aTalk \ "language" \ "value").as[String]
+            val theType = (aTalk \ "type" \ "value").as[String]
+            val theTrack = (aTalk \ "track" \ "value").as[String]
+            val l = (aConfig \ "languages").as[List[JsObject]]
+
+            l.foreach(el => {
+
+              if((el\"value").as[String].equals(theLang)){
+                talks.update(Json.obj(("_id" -> aTalk \ "_id")), Json.obj("$set" ->
+                  aTalk.transform(__.json.update((__ \ 'language).json.put(el.transform((__ \ '$$hashKey).json.prune).get)) andThen (__ \ '_id).json.prune ).get
+                )).map(lastError => println(lastError))
+              }
+              theList :+ aTalk
+
+            })
+            val trak = (aConfig \ "sessionTypes").as[List[JsObject]]
+            trak.foreach(el => {
+              if((el\"value").as[String].equals(theType)){
+                talks.update(Json.obj(("_id" -> aTalk \ "_id")), Json.obj("$set" ->
+                  aTalk.transform(__.json.update((__ \ 'type).json.put(el.transform((__ \ '$$hashKey).json.prune).get)) andThen (__ \ '_id).json.prune ).get
+                )).map(lastError => println(lastError))
+              }
+              theList :+ aTalk
+            })
+
+            val trakss = (aConfig \ "tracks").as[List[JsObject]]
+            trakss.foreach(el => {
+              if((el\"value").as[String].equals(theTrack)){
+                talks.update(Json.obj(("_id" -> aTalk \ "_id")), Json.obj("$set" ->
+                  aTalk.transform(__.json.update((__ \ 'track).json.put(el.transform((__ \ '$$hashKey).json.prune).get)) andThen (__ \ '_id).json.prune ).get
+                )).map(lastError => println(lastError))
+              }
+              theList :+ aTalk
+            })
+
+
+          }).getOrElse(theList :+ aTalk)
+
+          theList :+ aTalk
+        }).recover({case t => {println("hhaaaa lerrerrr "+t);List[JsObject]()}})
+      }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
+    }
+  }
+
   def acceptedSpeakers() = Action.async {
     implicit request => {
       val query = Json.obj(("accepted" -> true))
