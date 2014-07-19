@@ -398,7 +398,12 @@ object Application extends Controller with MongoController {
           ("twitter" -> 1))).cursor[JsObject]
 
       cursor.enumerate().run(Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aSpeaker) => {
-        talks.find(Json.obj(("speaker._id" -> aSpeaker \ "_id"))).cursor[JsObject]
+        println(aSpeaker)
+        talks.find(Json.obj(("$or",Json.arr(Json.obj(("speaker._id" -> aSpeaker \ "_id"))
+                                  ,Json.obj(("otherSpeakers.id" -> aSpeaker \ "_id" \ "$oid"))
+                            )),
+          ( ("status" -> 3 ))
+                            )).cursor[JsObject]
           .collect[List]().map(myTalks => {
           val traks = myTalks.foldLeft[Set[JsValue]](Set[JsValue]())((aSet,aTalkx) => aSet + aTalkx \ "track" \ "value" )
 
