@@ -111,6 +111,39 @@ jmaghreb.controller('AdminSpeakerCtrl', function ($scope,$rootScope, $http,$time
         else
             return "";
     }
+    $scope.updateValue = function(item,type){
+
+        function updateLabel(list){
+            for(a in list){
+                console.info(list[a].value+" = "+item.value)
+                if(list[a].value == item.value){
+
+                    item.label = list[a].label;
+                    break;
+                }
+            }
+        }
+        switch (type) {
+            case 'lang':
+                updateLabel($scope.config.languages)
+                break;
+            case 'confDays':
+                updateLabel($scope.config.confDays)
+                break;
+            case 'room':
+                updateLabel($scope.config.rooms)
+                break;
+            case 'type':
+                updateLabel($scope.config.sessionTypes)
+                break;
+            case 'track':
+                updateLabel($scope.config.tracks)
+                break;
+            case 'exp':
+                updateLabel($scope.config.audienceExperiences)
+                break;
+        }
+    }
     $scope.save = function () {
         $scope.disableSave = true;
         var speakerWithTalks = {"speaker":$scope.register,"talks":$scope.hisTalks}
@@ -427,6 +460,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     $scope.saveTalk = function (sendEmail) {
         if(!sendEmail) sendEmail = false;
         $scope.selectedTalk.loading = true;
+
         $http.post("/adminEditTalk?email="+sendEmail, JSON.stringify($scope.selectedTalk)).error(function (error) {
 
             $scope.selectedTalk.error = true;
@@ -454,9 +488,12 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     }
 
     $scope.updateValue = function(item,type){
+
         function updateLabel(list){
             for(a in list){
+                console.info(list[a].value+" = "+item.value)
                 if(list[a].value == item.value){
+
                     item.label = list[a].label;
                     break;
                 }
