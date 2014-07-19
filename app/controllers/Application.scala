@@ -471,7 +471,7 @@ object Application extends Controller with MongoController {
               theList :+ aTalk
 
             })
-            val trak = (aConfig \ "sessionTypes").as[List[JsObject]]
+            /*val trak = (aConfig \ "sessionTypes").as[List[JsObject]]
             trak.foreach(el => {
               if((el\"value").as[String].equals(theType)){
                 talks.update(Json.obj(("_id" -> aTalk \ "_id")), Json.obj("$set" ->
@@ -479,7 +479,7 @@ object Application extends Controller with MongoController {
                 )).map(lastError => println(lastError))
               }
               theList :+ aTalk
-            })
+            })   */
 
             /*val trakss = (aConfig \ "tracks").as[List[JsObject]]
             trakss.foreach(el => {
