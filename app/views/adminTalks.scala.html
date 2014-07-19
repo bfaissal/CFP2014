@@ -185,16 +185,16 @@
         <div class="row" style="margin-top:50px ;" ng-show="!form" >
             <div class="column">
                 <div class="ui  talks">
-                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse">
+                <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse">
                         <div ng-show="talk.status==2" class="ui blue ribbon label">Completed</div>
                         <div ng-show="talk.status==3" class="ui green ribbon label">Accepted</div>
                         <div ng-show="talk.status==4" class="ui red ribbon label">Rejected</div>
                         <div ng-show="talk.status==5" class="ui red ribbon label">Deleted</div>
                         <h2>{{talk.title}}</h2>
                         <div class="content">
-                            <p>
-                                <img src="{{talk.speaker.image}}" style="width: 100px;" >
-                                {{talk.speaker.lname}},{{talk.speaker.fname}}</p>
+                            <p ng-repeat="aSpeaker in talk.speakers">
+                                <img src="{{aSpeaker.image}}" style="width: 100px;" >
+                                {{aSpeaker.lname}},{{aSpeaker.fname}}</p>
                             <p>
                                 <b>Track: </b>{{talk.track.label}}      <br/>
                                 {{talk.abstract}}

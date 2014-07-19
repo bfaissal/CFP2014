@@ -323,7 +323,8 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         $scope.initLists();
     })
     $http.get("/allTalks").success(function (data) {
-        $scope.talks = data;
+        $scope.talks = data.talks;
+        console.info(data)
     })
     $scope.initLists = function () {
         if (!$scope.config.languages) $scope.config.languages = []

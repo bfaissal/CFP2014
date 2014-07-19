@@ -358,32 +358,43 @@ object Application extends Controller with MongoController {
 
   def allTalks() = AdminAction.async {
     implicit request => {
-      session.get("user").map(user => {
-        val userJson = Json.parse(user)
         val query = Json.obj()
-        val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
-        val futurePersonsList: Future[List[JsObject]] = cursor.collect[List]()
-        //val futurePersonsJsonArray: Future[JsArray] =
-        futurePersonsList.map {
-          persons =>
-            Ok(Json.toJson(persons))
-        }
+        talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+          .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
 
-      }).getOrElse(Future.successful(BadRequest(Messages("globals.serverInternalError.message"))))
-
+          val speakerIds = (aTalk \ "otherSpeakers") match {
+            case _ :JsUndefined => {List[JsValue](aTalk\"speaker"\"_id")}
+            case jsValue => { jsValue.as[List[JsValue]].foldLeft(List[JsValue](aTalk\"speaker"\"_id"))((l,e)=> { println(e);l :+ Json.obj(("$oid" -> e \ "id"))} ) }
+          }
+          collection.find(Json.obj(("_id"  -> Json.obj(("$in" ->  speakerIds )))),Json.obj(("fname" -> 1),
+            ("lname" -> 1),
+            ("bio" -> 1),
+            ("image" -> 1),
+            ("twitter" -> 1))).cursor[JsObject].collect[List]().map( theSpeaker =>{
+            theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
+          })
+        }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
   }
 
   def acceptedTalks() = Action.async {
     implicit request => {
         val query = Json.obj(("status" -> 3))
-        val cursor: Cursor[JsObject] = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
-        val futureTalksList: Future[List[JsObject]] = cursor.collect[List]()
-        //val futurePersonsJsonArray: Future[JsArray] =
-        futureTalksList.map {
-          talks =>
-            Ok(Json.toJson(Json.obj(("talks" ->talks))))
-        }
+        talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+          .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
+
+          val speakerIds = (aTalk \ "otherSpeakers") match {
+            case _ :JsUndefined => {List[JsValue](aTalk\"speaker"\"_id")}
+            case jsValue => { jsValue.as[List[JsValue]].foldLeft(List[JsValue](aTalk\"speaker"\"_id"))((l,e)=> { println(e);l :+ Json.obj(("$oid" -> e \ "id"))} ) }
+          }
+          collection.find(Json.obj(("_id"  -> Json.obj(("$in" ->  speakerIds )))),Json.obj(("fname" -> 1),
+            ("lname" -> 1),
+            ("bio" -> 1),
+            ("image" -> 1),
+            ("twitter" -> 1))).cursor[JsObject].collect[List]().map( theSpeaker =>{
+                theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
+          })
+        }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
   }
 
