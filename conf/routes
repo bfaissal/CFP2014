@@ -6,7 +6,7 @@
 GET         /                                              controllers.Application.loginPage
 POST        /register                                      controllers.Application.register
 POST        /createSpeaker                                 controllers.Application.createSpeaker
-POST        /adminCreateSpeaker                                 controllers.Application.adminCreateSpeaker
+POST        /adminCreateSpeaker                            controllers.Application.adminCreateSpeaker
 GET         /adminSpeaker                                  controllers.Application.adminSpeaker
 POST        /upload                                        controllers.Application.upload
 GET         /deleteImage/:id/:action                       controllers.Application.deleteImages(id :String,action :Boolean)
@@ -14,6 +14,7 @@ POST        /login                                         controllers.Applicati
 GET         /proposals                                     controllers.Application.index
 GET         /talks                                         controllers.Application.talksList
 GET         /allTalks                                      controllers.Application.allTalks
+GET         /fixTalks                                      controllers.Application.fixTalks
 GET         /acceptedTalks                                 controllers.Application.acceptedTalks
 GET         /acceptedSpeakers                              controllers.Application.acceptedSpeakers
 POST        /editTalk                                      controllers.Application.editTalk

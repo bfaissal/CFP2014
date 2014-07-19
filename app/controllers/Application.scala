@@ -77,7 +77,7 @@ object Application extends Controller with MongoController {
         gjson => {
           val speaker = (gjson \ "speaker")
 
-          val userJson = speaker.transform((__.json.update((__ \ 'actif).json.put(JsNumber(1)))) andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
+          val userJson = speaker.transform(generateId andThen (__.json.update((__ \ 'actif).json.put(JsNumber(1)))) andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
           collection.insert(userJson).map(_ => {
             {
               val insertedUser = userJson.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune
@@ -419,6 +419,24 @@ object Application extends Controller with MongoController {
                 theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
           })
         }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
+    }
+  }
+
+  def fixTalks() = Action.async {
+    implicit request => {
+      val query = Json.obj(("status" -> 3))
+      talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+        .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
+
+        println(Json.obj(("fname"-> aTalk\"speaker"\"fname"), ("lname"-> aTalk\"speaker"\"lname")))
+        collection.find(Json.obj(("fname"-> aTalk\"speaker"\"fname"), ("lname"-> aTalk\"speaker"\"lname")) ,Json.obj(("fname" -> 1),
+          ("lname" -> 1),
+          ("bio" -> 1),
+          ("image" -> 1),
+          ("twitter" -> 1))).cursor[JsObject].collect[List]().map( theSpeaker =>{
+          theList :+ aTalk.transform(__.json.update((__ \ 'speaker).json.put(JsArray(theSpeaker)))).get
+        })
+      }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
   }
 
