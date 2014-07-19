@@ -358,22 +358,46 @@ object Application extends Controller with MongoController {
 
   def allTalks() = AdminAction.async {
     implicit request => {
-        val query = Json.obj()
-        talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
-          .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
+      val query = Json.obj()
+      talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+        .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
 
-          val speakerIds = (aTalk \ "otherSpeakers") match {
-            case _ :JsUndefined => {List[JsValue](aTalk\"speaker"\"_id")}
-            case jsValue => { jsValue.as[List[JsValue]].foldLeft(List[JsValue](aTalk\"speaker"\"_id"))((l,e)=> { println(e);l :+ Json.obj(("$oid" -> e \ "id"))} ) }
+        val speakerIds = (aTalk \ "otherSpeakers") match {
+          case _: JsUndefined => {
+            List[JsValue](aTalk \ "speaker" \ "_id")
           }
-          collection.find(Json.obj(("_id"  -> Json.obj(("$in" ->  speakerIds )))),Json.obj(("fname" -> 1),
-            ("lname" -> 1),
-            ("bio" -> 1),
-            ("image" -> 1),
-            ("twitter" -> 1))).cursor[JsObject].collect[List]().map( theSpeaker =>{
-            theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
-          })
-        }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
+          case jsValue => {
+            jsValue.as[List[JsValue]]
+              .foldLeft(List[JsValue](aTalk \ "speaker" \ "_id"))((l, e) => {
+              e \ "id" match {
+                case _: JsUndefined => {l}
+                case speakerId => {
+                  val ss=  speakerId.as[String]
+                  val p = "[0-9A-F]+".r
+                  ss match {
+                    case p(c)=> {
+                      if(ss.length == 24 )
+                        l :+ Json.obj(("$oid" -> speakerId ))
+                      else l
+                    }
+                    case _ => l
+                  }
+
+                }
+              }
+
+            })
+          }
+        }
+        println("speakerIds = "+ speakerIds)
+        collection.find(Json.obj(("_id" -> Json.obj(("$in" -> speakerIds)))), Json.obj(("fname" -> 1),
+          ("lname" -> 1),
+          ("bio" -> 1),
+          ("image" -> 1),
+          ("twitter" -> 1))).cursor[JsObject].collect[List]().map(theSpeaker => {
+          theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
+        }).recover({case _=> println(" .......... ");theList})
+      }).map(acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
   }
 
@@ -409,7 +433,7 @@ object Application extends Controller with MongoController {
           ("twitter" -> 1))).cursor[JsObject]
 
       cursor.enumerate().run(Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aSpeaker) => {
-        println(aSpeaker)
+        //println(aSpeaker)
         talks.find(Json.obj(("$or",Json.arr(Json.obj(("speaker._id" -> aSpeaker \ "_id"))
                                   ,Json.obj(("otherSpeakers.id" -> aSpeaker \ "_id" \ "$oid"))
                             )),
@@ -479,13 +503,13 @@ object Application extends Controller with MongoController {
   }
 
   def emailSpeaker(myJson: JsValue, id: JsValue) = {
-    println("_id = " + id)
+
     val cursor: Cursor[JsObject] = collection.find(Json.obj("_id" -> id)).cursor[JsObject]
     cursor.headOption.map(value => {
       value.map(content => {
-        println("email to be sent to "+(content \ "id"))
+
         if ((myJson \ "status").as[Int] == 3) {
-          println("Sendi acceptation email")
+
           MailUtil.send((content \ "id").as[String], Messages("talks.accepted.subject"),
             Messages("talks.accepted.body", (content \ "fname").as[String], (myJson \ "title").as[String]),
             (content \ "fname").as[String])
@@ -505,7 +529,7 @@ object Application extends Controller with MongoController {
         myJson => {
           session.get("user").map(user => {
             val userJson = Json.parse(user)
-            print(userJson)
+
             val query = Json.obj(("_id" -> myJson \ "_id"))
             val generateUpdated = (__ \ 'updated \ 'date).json.put(JsNumber((new java.util.Date).getTime))
             val generateUpdatedBy = (__ \ 'updated \ 'by).json.put(userJson \ "_id")
