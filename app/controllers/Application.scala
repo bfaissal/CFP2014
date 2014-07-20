@@ -429,9 +429,14 @@ object Application extends Controller with MongoController {
       val query = Json.obj(("status" -> 3))
       talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
         .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
-
-        println(Json.obj(("fname"-> aTalk\"speaker"\"fname"), ("lname"-> aTalk\"speaker"\"lname")))
-        collection.find(Json.obj(("fname"-> aTalk\"speaker"\"fname"), ("lname"-> aTalk\"speaker"\"lname")) ,Json.obj(("fname" -> 1),
+        println(" XXXXXXX "+(aTalk\"speaker"))
+        val theOldSpeaker = (aTalk\"speaker") match {
+          case v:JsArray => val o = v.as[List[JsValue]]; o(0)
+          case v:JsValue => v
+        }
+        //val theOldSpeakers  =((aTalk\"speaker").as[List[JsValue]])
+        println("====> "+Json.obj(("fname"-> theOldSpeaker \"fname"), ("lname"-> theOldSpeaker \"lname")))
+        collection.find(Json.obj(("fname"-> theOldSpeaker\"fname"), ("lname"-> theOldSpeaker\"lname")) ,Json.obj(("fname" -> 1),
           ("lname" -> 1),
           ("bio" -> 1),
           ("image" -> 1),
