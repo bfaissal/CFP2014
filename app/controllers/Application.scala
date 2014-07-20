@@ -389,12 +389,13 @@ object Application extends Controller with MongoController {
             })
           }
         }
-        println("speakerIds = "+ speakerIds)
+        //println("speakerIds = "+ speakerIds)
         collection.find(Json.obj(("_id" -> Json.obj(("$in" -> speakerIds)))), Json.obj(("fname" -> 1),
           ("lname" -> 1),
           ("bio" -> 1),
           ("image" -> 1),
           ("twitter" -> 1))).cursor[JsObject].collect[List]().map(theSpeaker => {
+          println("theSpeaker = "+theSpeaker)
           theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
         }).recover({case _=> println(" .......... ");theList})
       }).map(acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
@@ -411,6 +412,7 @@ object Application extends Controller with MongoController {
             case _ :JsUndefined => {List[JsValue](aTalk\"speaker"\"_id")}
             case jsValue => { jsValue.as[List[JsValue]].foldLeft(List[JsValue](aTalk\"speaker"\"_id"))((l,e)=> { println(e);l :+ Json.obj(("$oid" -> e \ "id"))} ) }
           }
+          println(s" ==============> speakerIds = $speakerIds")
           collection.find(Json.obj(("_id"  -> Json.obj(("$in" ->  speakerIds )))),Json.obj(("fname" -> 1),
             ("lname" -> 1),
             ("bio" -> 1),
