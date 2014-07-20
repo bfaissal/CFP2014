@@ -436,12 +436,12 @@ object Application extends Controller with MongoController {
           ("bio" -> 1),
           ("image" -> 1),
           ("twitter" -> 1))).cursor[JsObject].collect[List]().map( theSpeaker =>{
-          val newT = aTalk.transform(__.json.update((__ \ 'speaker).json.put(JsArray(theSpeaker)))).get
+          val newT = aTalk.transform(__.json.update((__ \ 'speaker).json.put((theSpeaker(0))))).get
 
           talks.update(Json.obj(("_id" -> newT \ "_id")), Json.obj("$set" ->
             newT.transform( (__ \ '_id).json.prune ).get
           )).map(lastError => println(lastError))
-          theList :+ aTalk.transform(__.json.update((__ \ 'speaker).json.put(JsArray(theSpeaker)))).get
+          theList :+ aTalk.transform(__.json.update((__ \ 'speaker).json.put(theSpeaker(0)))).get
         })
       }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
