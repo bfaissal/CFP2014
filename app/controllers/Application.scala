@@ -427,28 +427,17 @@ object Application extends Controller with MongoController {
   def fixTalks() = AdminAction.async {
     implicit request => {
       val query = Json.obj(("status" -> 3))
-      talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
-        .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
-        println(" XXXXXXX "+(aTalk\"speaker"))
-        val theOldSpeaker = (aTalk\"speaker") match {
-          case v:JsArray => val o = v.as[List[JsValue]]; o(0)
-          case v:JsValue => v
-        }
-        //val theOldSpeakers  =((aTalk\"speaker").as[List[JsValue]])
-        println("====> "+Json.obj(("fname"-> theOldSpeaker \"fname"), ("lname"-> theOldSpeaker \"lname")))
-        collection.find(Json.obj(("fname"-> theOldSpeaker\"fname"), ("lname"-> theOldSpeaker\"lname")) ,Json.obj(("fname" -> 1),
-          ("lname" -> 1),
-          ("bio" -> 1),
-          ("image" -> 1),
-          ("twitter" -> 1))).cursor[JsObject].collect[List]().map( theSpeaker =>{
-          val newT = aTalk.transform(__.json.update((__ \ 'speaker).json.put((theSpeaker(0))))).get
-
-          talks.update(Json.obj(("_id" -> newT \ "_id")), Json.obj("$set" ->
-            newT.transform( (__ \ '_id).json.prune ).get
-          )).map(lastError => println(lastError))
-          theList :+ aTalk.transform(__.json.update((__ \ 'speaker).json.put(theSpeaker(0)))).get
-        })
-      }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
+      val res = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+        .enumerate() |>>> Iteratee.fold[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
+        // an exception may happen here
+        if (((aTalk \ "hex").as[String]).length == 24)
+          theList :+ aTalk
+        else
+          theList
+      }).map(l => {
+        Ok(Json.toJson(Json.obj(("talks" -> l))))
+      })
+      res.recover({case _ => InternalServerError("Not a hex talk")})
     }
   }
 
@@ -608,7 +597,7 @@ object Application extends Controller with MongoController {
     })
   }
 
-  def adminEditTalk(email:Boolean) = AdminAction.async {
+  def adminEditTalk(email:Boolean,acceptSpeaker:Boolean) = AdminAction.async {
     implicit request => {
       request.body.asJson.flatMap {
         myJson => {
@@ -622,8 +611,7 @@ object Application extends Controller with MongoController {
               andThen ((__ \ '$$hashKey).json.prune).andThen((__ \ 'loading).json.prune).andThen((__ \ 'error).json.prune))
             talks.update(query, Json.obj(("$set" -> res.get))).map(lastError => {
               if(email) emailSpeaker(myJson, res.get \ "speaker" \ "_id")
-
-              collection.update(Json.obj("_id" -> res.get \ "speaker" \ "_id"), Json.obj("$set" -> Json.obj("accepted" -> true)))
+              if(acceptSpeaker)  collection.update(Json.obj("_id" -> res.get \ "speaker" \ "_id"), Json.obj("$set" -> Json.obj("accepted" -> true)))
               //println("==> " + (res.get \ "otherSpeakers"))
               (res.get \ "otherSpeakers") match {
                 case otherS:JsUndefined =>{}

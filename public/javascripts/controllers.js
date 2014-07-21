@@ -457,11 +457,12 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         $scope.selectedTalk = talk;
         $scope.saveTalk();
     }
-    $scope.saveTalk = function (sendEmail) {
+    $scope.saveTalk = function (sendEmail,acceptSpeaker) {
         if(!sendEmail) sendEmail = false;
+        if(!acceptSpeaker) acceptSpeaker = false;
         $scope.selectedTalk.loading = true;
 
-        $http.post("/adminEditTalk?email="+sendEmail, JSON.stringify($scope.selectedTalk)).error(function (error) {
+        $http.post("/adminEditTalk?email="+sendEmail+"&acceptSpeaker="+acceptSpeaker, JSON.stringify($scope.selectedTalk)).error(function (error) {
 
             $scope.selectedTalk.error = true;
         }).success(function (data) {
@@ -478,7 +479,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         if (status == 1 || confirm(message)) {
             $scope.selectedTalk = talk;
             $scope.selectedTalk.status = status;
-            $scope.saveTalk(status == 3);
+            $scope.saveTalk(status == 3 || status == 4 ,status == 3);
         }
     }
     $scope.cancel = function () {
