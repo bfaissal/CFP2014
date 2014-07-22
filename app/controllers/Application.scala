@@ -77,9 +77,12 @@ object Application extends Controller with MongoController {
         gjson => {
           val speaker = (gjson \ "speaker")
 
-          val userJson = speaker.transform(generateId andThen (__.json.update((__ \ 'accepted).json.put(JsBoolean(true)))) andThen (__.json.update((__ \ 'actif).json.put(JsNumber(1)))) andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
-          collection.insert(userJson).map(_ => {
+          val userJson = speaker.transform(__.json.update(generateId) andThen (__.json.update((__ \ 'accepted).json.put(JsBoolean(true)))) andThen (__.json.update((__ \ 'actif).json.put(JsNumber(1)))) andThen (__ \ 'admin).json.prune andThen (__ \ 'reviewer).json.prune).get
+
+          println( userJson )
+          collection.insert(userJson).map(lerr => {
             {
+              println(lerr)
               val insertedUser = userJson.transform((__ \ 'password).json.prune andThen (__ \ 'cpassword).json.prune
                 andThen (__ \ 'activationCode).json.prune andThen (__ \ 'id).json.prune) .get
               val seqTalks = (gjson \ "talks").as[List[JsValue]]
