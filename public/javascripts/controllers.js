@@ -474,12 +474,13 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
             })
         $scope.cancel();
     }
-    $scope.changeStatus = function (talk, status) {
+    $scope.changeStatus = function (talk, status,isEmailSent) {
         var message = status == 2 ? 'Do you want to complete this talk ?' : 'Do you want to delete this talk ?'
+        if(!isEmailSent) isEmailSent = false;
         if (status == 1 || confirm(message)) {
             $scope.selectedTalk = talk;
             $scope.selectedTalk.status = status;
-            $scope.saveTalk(status == 3 || status == 4 ,status == 3);
+            $scope.saveTalk(isEmailSent ,status == 3);
         }
     }
     $scope.cancel = function () {

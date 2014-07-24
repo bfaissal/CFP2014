@@ -430,6 +430,7 @@ object Application extends Controller with MongoController {
   def fixTalks() = Action.async {
     implicit request => {
       val query = Json.obj(("status" -> 3))
+      val ioy = Iteratee.consume
 
       val res = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
         .enumerate(10,true) |>>>  Iteratee.fold[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
