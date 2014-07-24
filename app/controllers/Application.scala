@@ -432,7 +432,7 @@ object Application extends Controller with MongoController {
       val query = Json.obj(("status" -> 3))
 
       val res = talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
-        .enumerate() |>>  Iteratee.fold[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
+        .enumerate(10,true) |>>>  Iteratee.fold[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
         println("start")
         // an exception may happen here
         if (((aTalk \ "hex").as[String]).length == 24){
@@ -445,13 +445,13 @@ object Application extends Controller with MongoController {
           //Future.successful(theList)
           theList
         }
-      })/*.map(l => {
+      }).map(l => {
         Ok(Json.toJson(Json.obj(("talks" -> l))))
-      })*/
-      //val r = res.recover({case _ => InternalServerError("Not a hex talk")})
+      })
+      val r = res.recover({case _ => InternalServerError("Not a hex talk")})
       //r.map( s => println("Done "+s))
-      Future.successful(Ok("done "))
-
+      //Future.successful(Ok("done "))
+      r
     }
   }
 
