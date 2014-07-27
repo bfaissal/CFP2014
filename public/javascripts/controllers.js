@@ -111,15 +111,23 @@ jmaghreb.controller('AdminSpeakerCtrl', function ($scope,$rootScope, $http,$time
         else
             return "";
     }
-    $scope.updateValue = function(item,type){
+    $scope.updateValue = function(item,type, original,field){
 
         function updateLabel(list){
-            for(a in list){
-                console.info(list[a].value+" = "+item.value)
-                if(list[a].value == item.value){
 
-                    item.label = list[a].label;
-                    break;
+            if(item.value == ""){
+                if(original && field){
+                    delete original[field]
+                }
+            }
+            else{
+                for(a in list){
+                    console.info(list[a].value+" = "+item.value)
+                    if(list[a].value == item.value){
+
+                        item.label = list[a].label;
+                        break;
+                    }
                 }
             }
         }
@@ -489,15 +497,24 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
         $scope.edition = false;
     }
 
-    $scope.updateValue = function(item,type){
+    $scope.updateValue = function(item,type,original,field){
 
         function updateLabel(list){
             for(a in list){
-                console.info(list[a].value+" = "+item.value)
-                if(list[a].value == item.value){
+                if(item.value == "" || item.value == undefined ){
+                    if(original && field){
+                        delete original[field]
+                    }
+                }
+                else{
+                    for(a in list){
+                        console.info(list[a].value+" = "+item.value)
+                        if(list[a].value == item.value){
 
-                    item.label = list[a].label;
-                    break;
+                            item.label = list[a].label;
+                            break;
+                        }
+                    }
                 }
             }
         }
