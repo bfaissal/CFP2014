@@ -407,23 +407,47 @@ object Application extends Controller with MongoController {
 
   def acceptedTalks() = Action.async {
     implicit request => {
-        val query = Json.obj(("status" -> 3))
-        talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
-          .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
+      val query = Json.obj(("status" -> 3))
+      talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+        .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
 
-          val speakerIds = (aTalk \ "otherSpeakers") match {
-            case _ :JsUndefined => {List[JsValue](aTalk\"speaker"\"_id")}
-            case jsValue => { jsValue.as[List[JsValue]].foldLeft(List[JsValue](aTalk\"speaker"\"_id"))((l,e)=> { println(e);l :+ Json.obj(("$oid" -> e \ "id"))} ) }
+        val speakerIds = (aTalk \ "otherSpeakers") match {
+          case _: JsUndefined => {
+            List[JsValue](aTalk \ "speaker" \ "_id")
           }
-          println(s" ==============> speakerIds = $speakerIds")
-          collection.find(Json.obj(("_id"  -> Json.obj(("$in" ->  speakerIds )))),Json.obj(("fname" -> 1),
-            ("lname" -> 1),
-            ("bio" -> 1),
-            ("image" -> 1),
-            ("twitter" -> 1))).cursor[JsObject].collect[List]().map( theSpeaker =>{
-                theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
-          })
-        }).map( acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
+          case jsValue => {
+            jsValue.as[List[JsValue]]
+              .foldLeft(List[JsValue](aTalk \ "speaker" \ "_id"))((l, e) => {
+
+              e \ "id" match {
+                case _: JsUndefined => {l}
+                case speakerId => {
+
+                  val ss=  speakerId.as[String]
+                  val p = """([0-9A-Fa-f]+)""".r
+
+                  if(p.pattern.matcher(ss).matches && ss.length == 24 )   {
+
+                    l :+ Json.obj(("$oid" -> speakerId ))
+                  }
+                  else l
+
+                }
+              }
+
+            })
+          }
+        }
+
+        collection.find(Json.obj(("_id" -> Json.obj(("$in" -> speakerIds)))), Json.obj(("fname" -> 1),
+          ("lname" -> 1),
+          ("bio" -> 1),
+          ("image" -> 1),
+          ("twitter" -> 1))).cursor[JsObject].collect[List]().map(theSpeaker => {
+
+          theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
+        }).recover({case _=> theList})
+      }).map(acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
   }
 
