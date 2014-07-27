@@ -255,11 +255,13 @@
                                 <input type="text" ng-model="myFilter.abstract" />
                             </div>
                         </div>
-
+                         <div>
+                             {{myTalks.length}} results found.
                          </div>
-                                    </div>
-                                </div>
-                            </div>
+                         </div>
+                        </div>
+                    </div>
+                </div>
 
 
                     </form>
@@ -267,7 +269,7 @@
                 </div>
                 <div class=" ten wide column">
                     <div class="ui  talks">
-                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse | filter:myFilter ">
+                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in myTalks = (talks | orderBy:predicate:reverse | filter:myFilter)  ">
                             <div ng-show="talk.status==2" class="ui blue ribbon label">Completed</div>
                             <div ng-show="talk.status==3" class="ui green ribbon label">Accepted</div>
                             <div ng-show="talk.status==4" class="ui red ribbon label">Rejected</div>

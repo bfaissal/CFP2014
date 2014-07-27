@@ -449,6 +449,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     $scope.predicate = 'title'
     $scope.predicateList ='order'
 
+
     $scope.edit = function (talk) {
         $scope.selectedTalk = {}
         $scope.selectedTalk = talk;
