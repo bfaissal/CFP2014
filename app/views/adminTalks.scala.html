@@ -182,46 +182,107 @@
             </div>
         </form>
 
-        <div class="row" style="margin-top:50px ;" ng-show="!form" >
-            <div class="column">
-                <div class="ui  talks">
-                <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse">
-                        <div ng-show="talk.status==2" class="ui blue ribbon label">Completed</div>
-                        <div ng-show="talk.status==3" class="ui green ribbon label">Accepted</div>
-                        <div ng-show="talk.status==4" class="ui red ribbon label">Rejected</div>
-                        <div ng-show="talk.status==5" class="ui red ribbon label">Deleted</div>
-                        <h2>{{talk.title}}</h2>
-                        <div class="content">
-                            <p ng-repeat="aSpeaker in talk.speakers">
-                                <img src="{{aSpeaker.image}}" style="width: 100px;" >
-                                {{aSpeaker.lname}}, {{aSpeaker.fname}}</p>
-                            <p>
-                                <b>Track: </b>{{talk.track.label}}      <br/>
-                                {{talk.abstract}}
-                            </p>
+        <div class="ui grid show-hide-animation " ng-show="!form">
+            <div class="row" style="margin-top:50px ;" ng-show="!form" >
+                <div class=" five wide column" >
+                <div style="position: fixed;width: inherit">
+                    <form>
 
-                            <div class="cbutton_action" style="float : right">
-                                <div class="ui icon blue small buttons">
-                                    <button class="ui button" ng-show="talk.status!=5" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
-                                    <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,2,false)"><i class="checkmark sign icon"></i></button>
-                                    <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3,true)"><i class="checkmark sign icon"></i></button>
-                                    <button class="ui red button" ng-click="changeStatus(talk,4,true)"><i class="level down sign icon"></i></button>
-                                    <button class="ui button" ng-show="talk.status!=5" ng-click="changeStatus(talk,5,false)"><i class="trash icon"></i></button>
-                                     <div class="ui divider"></div>
-                                    <button class="ui red button" ng-click="changeStatus(talk,4,false)"><i class="level down sign icon"></i></button>
-                                    <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3,false)"><i class="checkmark sign icon"></i></button>
+                        <div class="ui one column grid ">
+                            <div class="row " >
+                                <div class="column">
+                                    <h4>Filter [not implemented yet]</h4>
+                                    <div class="ui form " style="margin: 20px;">
+
+                        <div class="field">
+                            <label>Language</label>
+                            <div class="ui left labeled icon input">
+                                <select ng-model="selectedTalk.language.value" ng-required="true" ng-change="updateValue(selectedTalk.language,'lang')">
+                                    <option value="">...</option>
+                                    <option ng-repeat="lang in config.languages | orderBy:predicateList:reverse" value="{{lang.value}}">
+                                        {{lang.label}}</option>
+                                </select>
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="ui right blue corner label" ng-show="talk.loading">
-                            <i class="loading icon"></i>
+                        <div class="field">
+                            <label>Session type</label>
+                            <div class="ui left labeled icon input">
+                                <select ng-model="selectedTalk.type.value" ng-required="true" ng-change="updateValue(selectedTalk.type,'type')">
+                                    <option value="">...</option>
+                                    <option ng-repeat="lang in config.sessionTypes | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                        {{lang.label}}</option>
+                                </select>
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div class="ui right red corner label" ng-show="talk.error">
-                            <i class="attention icon"></i>
+                        <div class="field">
+                            <label>Session track</label>
+                            <div class="ui left labeled icon input">
+                                <select ng-model="selectedTalk.track.value" ng-required="true" ng-change="updateValue(selectedTalk.track,'track')">
+                                    <option value="">...</option>
+                                    <option ng-repeat="lang in config.tracks | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                        {{lang.label}}</option>
+                                </select>
+                                <div class="ui corner label">
+                                    <i class="icon asterisk"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                    </form>
+                </div>
+                </div>
+                <div class=" ten wide column">
+                    <div class="ui  talks">
+                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in talks  | orderBy:predicate:reverse">
+                            <div ng-show="talk.status==2" class="ui blue ribbon label">Completed</div>
+                            <div ng-show="talk.status==3" class="ui green ribbon label">Accepted</div>
+                            <div ng-show="talk.status==4" class="ui red ribbon label">Rejected</div>
+                            <div ng-show="talk.status==5" class="ui red ribbon label">Deleted</div>
+                            <h2>{{talk.title}}</h2>
+                            <div class="content">
+                                <p ng-repeat="aSpeaker in talk.speakers">
+                                    <img src="{{aSpeaker.image}}" style="width: 100px;" >
+                                    {{aSpeaker.lname}}, {{aSpeaker.fname}}</p>
+                                <p>
+                                    <b>Track: </b>{{talk.track.label}}      <br/>
+                                    {{talk.abstract}}
+                                </p>
+
+                                <div class="cbutton_action" style="float : right">
+                                    <div class="ui icon blue small buttons">
+                                        <button class="ui button" ng-show="talk.status!=5" ng-click="edit(talk)" title="complete"><i class="edit icon"></i></button>
+                                        <button class="ui button" ng-show="talk.status==1" ng-click="changeStatus(talk,2,false)"><i class="checkmark sign icon"></i></button>
+                                        <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3,true)"><i class="checkmark sign icon"></i></button>
+                                        <button class="ui red button" ng-click="changeStatus(talk,4,true)"><i class="level down sign icon"></i></button>
+                                        <button class="ui button" ng-show="talk.status!=5" ng-click="changeStatus(talk,5,false)"><i class="trash icon"></i></button>
+                                         <div class="ui divider"></div>
+                                        <button class="ui red button" ng-click="changeStatus(talk,4,false)"><i class="level down sign icon"></i></button>
+                                        <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3,false)"><i class="checkmark sign icon"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui right blue corner label" ng-show="talk.loading">
+                                <i class="loading icon"></i>
+                            </div>
+                            <div class="ui right red corner label" ng-show="talk.error">
+                                <i class="attention icon"></i>
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
             </div>
         </div>
