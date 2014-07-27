@@ -229,7 +229,7 @@
                         </div>
 
                         <div class="field">
-                            <label>Session track</label>
+                            <label>Session status</label>
                             <div class="ui left labeled icon input">
                                 <select ng-model="myFilter.status">
                                     <option value="">...</option>
@@ -274,7 +274,7 @@
                             <div ng-show="talk.status==5" class="ui red ribbon label">Deleted</div>
                             <h2>{{talk.title}}</h2>
                             <div class="content">
-                                <p ng-repeat="aSpeaker in talk.speakers | ">
+                                <p ng-repeat="aSpeaker in talk.speakers ">
                                     <img src="{{aSpeaker.image}}" style="width: 100px;" >
                                     {{aSpeaker.lname}}, {{aSpeaker.fname}}</p>
                                 <p>
