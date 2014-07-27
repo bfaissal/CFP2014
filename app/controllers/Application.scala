@@ -376,15 +376,12 @@ object Application extends Controller with MongoController {
                 case _: JsUndefined => {l}
                 case speakerId => {
                   val ss=  speakerId.as[String]
-                  val p = "[0-9A-F]+".r
-                  ss match {
-                    case p(c)=> {
-                      if(ss.length == 24 )
-                        l :+ Json.obj(("$oid" -> speakerId ))
-                      else l
-                    }
-                    case _ => l
+                  val p = """[0-9A-F]+""".r
+                  if(p.pattern.matcher(ss).matches && ss.length == 24 )   {
+
+                    l :+ Json.obj(("$oid" -> speakerId ))
                   }
+                  else l
 
                 }
               }
