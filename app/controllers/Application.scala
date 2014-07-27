@@ -372,11 +372,14 @@ object Application extends Controller with MongoController {
           case jsValue => {
             jsValue.as[List[JsValue]]
               .foldLeft(List[JsValue](aTalk \ "speaker" \ "_id"))((l, e) => {
+
               e \ "id" match {
                 case _: JsUndefined => {l}
                 case speakerId => {
+
                   val ss=  speakerId.as[String]
-                  val p = """[0-9A-F]+""".r
+                  val p = """([0-9A-Fa-f]+)""".r
+
                   if(p.pattern.matcher(ss).matches && ss.length == 24 )   {
 
                     l :+ Json.obj(("$oid" -> speakerId ))
@@ -389,15 +392,15 @@ object Application extends Controller with MongoController {
             })
           }
         }
-        //println("speakerIds = "+ speakerIds)
+
         collection.find(Json.obj(("_id" -> Json.obj(("$in" -> speakerIds)))), Json.obj(("fname" -> 1),
           ("lname" -> 1),
           ("bio" -> 1),
           ("image" -> 1),
           ("twitter" -> 1))).cursor[JsObject].collect[List]().map(theSpeaker => {
-          println("theSpeaker = "+theSpeaker)
+
           theList :+ aTalk.transform(__.json.update((__ \ 'speakers).json.put(JsArray(theSpeaker)))).get
-        }).recover({case _=> println(" .......... ");theList})
+        }).recover({case _=> theList})
       }).map(acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
   }
