@@ -404,11 +404,12 @@ object Application extends Controller with MongoController {
       }).map(acceptedTalks => Ok(Json.toJson(Json.obj(("talks" -> acceptedTalks)))))
     }
   }
-
-  def acceptedTalks() = Action.async {
+  def acceptedTalks() = acceptedTalksCore(true)
+  def acceptedTalksScheduler() = acceptedTalksCore(false)
+  def acceptedTalksCore(scheduler:Boolean) = Action.async {
     implicit request => {
-      val query = Json.obj(("status" -> 3))
-      talks.find(query).sort(Json.obj(("title" -> 1))).cursor[JsObject]
+      val query = if(scheduler) Json.obj(("status" -> 3),("type.value" -> Json.obj(("$ne" -> 99)))) else Json.obj(("status" -> 3))
+      talks.find(query).sort(Json.obj(("day.value" -> 1),("from.h" -> 1),("from.m" -> 1))).cursor[JsObject]
         .enumerate() |>>> Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aTalk) => {
 
         val speakerIds = (aTalk \ "otherSpeakers") match {
