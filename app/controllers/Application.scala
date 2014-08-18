@@ -443,6 +443,7 @@ object Application extends Controller with MongoController {
         collection.find(Json.obj(("_id" -> Json.obj(("$in" -> speakerIds)))), Json.obj(("fname" -> 1),
           ("lname" -> 1),
           ("bio" -> 1),
+          ("title" -> 1),
           ("image" -> 1),
           ("twitter" -> 1))).cursor[JsObject].collect[List]().map(theSpeaker => {
 
@@ -543,6 +544,7 @@ object Application extends Controller with MongoController {
         Json.obj(("fname" -> 1),
           ("lname" -> 1),
           ("bio" -> 1),
+          ("title" -> 1),
           ("image" -> 1),
           ("twitter" -> 1))).cursor[JsObject]
 
