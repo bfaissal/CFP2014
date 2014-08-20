@@ -547,7 +547,7 @@ object Application extends Controller with MongoController {
           ("order" -> 1),
           ("title" -> 1),
           ("image" -> 1),
-          ("twitter" -> 1))).cursor[JsObject]
+          ("twitter" -> 1))).sort(Json.obj(("order" -> -1))).cursor[JsObject]
 
       cursor.enumerate().run(Iteratee.foldM[JsObject, List[JsObject]](List[JsObject]())((theList, aSpeaker) => {
         //println(aSpeaker)
@@ -555,7 +555,7 @@ object Application extends Controller with MongoController {
                                   ,Json.obj(("otherSpeakers.id" -> aSpeaker \ "_id" \ "$oid"))
                             )),
           ( ("status" -> 3 ))
-                            )).sort(Json.obj(("order" -> 1))).cursor[JsObject]
+                            )).cursor[JsObject]
           .collect[List]().map(myTalks => {
           val traks = myTalks.foldLeft[Set[JsValue]](Set[JsValue]())((aSet,aTalkx) => aSet + aTalkx \ "track" \ "value" )
 
