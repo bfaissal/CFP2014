@@ -551,22 +551,18 @@ jmaghreb.config(function ($routeProvider) {
 jmaghreb.filter('notScheduled', function() {
     return function(talks,scheduled) {
         var out = [];
-        console.info("thats a xx "+scheduled)
         if(scheduled){
-            console.info(talks)
         for (aTalk in talks){
-            //console.info("thats a "+talks[aTalk].day.value)
-            try{if(talks[aTalk].day && talks[aTalk].day.value != "" && talks[aTalk].room && talks[aTalk].room.value != ""){
+            try{
+                if(talks[aTalk].day && talks[aTalk].day.value != "" && talks[aTalk].room && talks[aTalk].room.value != ""){
                 out.push(talks[aTalk]);
-                console.info("thats a "+talks[aTalk].day.value)
             }
-            }catch(e){console.error("an error")}
+            }catch(e){}
         }
         }
         else{
             out = talks;
         }
-        console.info(out.length)
         return out;
     }
 });
