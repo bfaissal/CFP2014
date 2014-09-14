@@ -122,7 +122,7 @@ jmaghreb.controller('AdminSpeakerCtrl', function ($scope,$rootScope, $http,$time
             }
             else{
                 for(a in list){
-                    console.info(list[a].value+" = "+item.value)
+
                     if(list[a].value == item.value){
 
                         item.label = list[a].label;
@@ -313,7 +313,7 @@ jmaghreb.controller('talksCtrl', function ($scope, $http) {
         }
     }
     $scope.findSpeaker = function(speaker){
-        console.log($scope.selectedTalk.otherSpeakers)
+
         $http.get("/speaker/"+speaker.id).success(function (data) {
             speaker.fname = data.fname
             speaker.lname = data.lname
@@ -349,8 +349,8 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
 
     $scope.minutes = [];
     $scope.minutes.push("00")
-    for(i= 1; i <4 ; i++) {
-        $scope.minutes.push(i*15)
+    for(i= 1; i <12 ; i++) {
+        $scope.minutes.push(i*5)
     }
     for(i = 8; i < 20 ; i++){
         if(i < 10)
@@ -365,7 +365,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     })
     $http.get("/allTalks").success(function (data) {
         $scope.talks = data.talks;
-        console.info(data)
+
     })
     $scope.initLists = function () {
         if (!$scope.config.languages) $scope.config.languages = []
@@ -509,7 +509,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
                 }
                 else{
                     for(a in list){
-                        console.info(list[a].value+" = "+item.value)
+
                         if(list[a].value == item.value){
 
                             item.label = list[a].label;
@@ -547,3 +547,26 @@ jmaghreb.config(function ($routeProvider) {
     $routeProvider.when('p1', { templateUrl: 'partial1_.html', controller: 'talksCtrl' })
         .when('p2', { templateUrl: 'partial2_.html', controller: 'ProfileCtrl' });
 })
+
+jmaghreb.filter('notScheduled', function() {
+    return function(talks,scheduled) {
+        var out = [];
+        console.info("thats a xx "+scheduled)
+        if(scheduled){
+            console.info(talks)
+        for (aTalk in talks){
+            //console.info("thats a "+talks[aTalk].day.value)
+            try{if(talks[aTalk].day && talks[aTalk].day.value != "" && talks[aTalk].room && talks[aTalk].room.value != ""){
+                out.push(talks[aTalk]);
+                console.info("thats a "+talks[aTalk].day.value)
+            }
+            }catch(e){console.error("an error")}
+        }
+        }
+        else{
+            out = talks;
+        }
+        console.info(out.length)
+        return out;
+    }
+});

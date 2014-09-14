@@ -192,76 +192,85 @@
                             <div class="row " >
                                 <div class="column">
                                     <h4>Filter</h4>
-                                    <div class="ui form " style="margin: 20px;">
+                                    <div class="ui form " style="margin : 20 px ;">
+                                        <div class="two fields">
+                                            <div class="field">
+                                                <label>Language</label>
+                                                <div class="ui left labeled icon input">
+                                                    <select ng-model="myFilter.language.value" ng-change="updateValue(myFilter.language,'lang',myFilter,'language')">
+                                                        <option value="">...</option>
+                                                        <option ng-repeat="lang in config.languages | orderBy:predicateList:reverse" value="{{lang.value}}">
+                                                            {{lang.label}}</option>
+                                                    </select>
 
-                        <div class="field">
-                            <label>Language</label>
-                            <div class="ui left labeled icon input">
-                                <select ng-model="myFilter.language.value" ng-change="updateValue(myFilter.language,'lang',myFilter,'language')">
-                                    <option value="">...</option>
-                                    <option ng-repeat="lang in config.languages | orderBy:predicateList:reverse" value="{{lang.value}}">
-                                        {{lang.label}}</option>
-                                </select>
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <label>Session type</label>
+                                                <div class="ui left labeled icon input">
+                                                    <select ng-model="myFilter.type.value" ng-change="updateValue(myFilter.type,'type',myFilter,'type')">
+                                                        <option value="">...</option>
+                                                        <option ng-repeat="lang in config.sessionTypes | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                                            {{lang.label}}</option>
+                                                    </select>
 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="two fields">
+                                            <div class="field">
+                                                <label>Session track</label>
+                                                <div class="ui left labeled icon input">
+                                                    <select ng-model="myFilter.track.value" ng-change="updateValue(myFilter.track,'track',myFilter,'track')">
+                                                        <option value="">...</option>
+                                                        <option ng-repeat="lang in config.tracks | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                                            {{lang.label}}</option>
+                                                    </select>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="field">
+                                                <label>Session status</label>
+                                                <div class="ui left labeled icon input">
+                                                    <select ng-model="myFilter.status">
+                                                        <option value="">...</option>
+                                                        <option value="1">In progress</option>
+                                                        <option value="2">Completed</option>
+                                                        <option value="3">Accepted</option>
+                                                        <option value="4">Rejected</option>
+                                                        <option value="5">Deleted</option>
+                                                    </select>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label>Scheduled</label>
+                                            <div class="ui left labeled icon input">
+                                                <input type="checkbox" ng-model="scheduled" />
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <label>Title</label>
+                                            <div class="ui left labeled icon input">
+                                                <input type="text" ng-model="myFilter.title" />
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <label>Abstract</label>
+                                            <div class="ui left labeled icon input">
+                                                <input type="text" ng-model="myFilter.abstract" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            {{myTalks.length}} results found.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="field">
-                            <label>Session type</label>
-                            <div class="ui left labeled icon input">
-                                <select ng-model="myFilter.type.value" ng-change="updateValue(myFilter.type,'type',myFilter,'type')">
-                                    <option value="">...</option>
-                                    <option ng-repeat="lang in config.sessionTypes | orderBy:predicateList:reverse " value="{{lang.value}}">
-                                        {{lang.label}}</option>
-                                </select>
-
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label>Session track</label>
-                            <div class="ui left labeled icon input">
-                                <select ng-model="myFilter.track.value" ng-change="updateValue(myFilter.track,'track',myFilter,'track')">
-                                    <option value="">...</option>
-                                    <option ng-repeat="lang in config.tracks | orderBy:predicateList:reverse " value="{{lang.value}}">
-                                        {{lang.label}}</option>
-                                </select>
-
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label>Session status</label>
-                            <div class="ui left labeled icon input">
-                                <select ng-model="myFilter.status">
-                                    <option value="">...</option>
-                                    <option value="1">In progress</option>
-                                    <option value="2">Completed</option>
-                                    <option value="3">Accepted</option>
-                                    <option value="4">Rejected</option>
-                                    <option value="5">Deleted</option>
-                                </select>
-
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label>Title</label>
-                            <div class="ui left labeled icon input">
-                                <input type="text" ng-model="myFilter.title" />
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label>Abstract</label>
-                            <div class="ui left labeled icon input">
-                                <input type="text" ng-model="myFilter.abstract" />
-                            </div>
-                        </div>
-                         <div>
-                             {{myTalks.length}} results found.
-                         </div>
-                         </div>
-                        </div>
-                    </div>
-                </div>
 
 
                     </form>
@@ -269,7 +278,7 @@
                 </div>
                 <div class=" ten wide column">
                     <div class="ui  talks">
-                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in myTalks = (talks | orderBy:predicate:reverse | filter:myFilter)  ">
+                    <div class="ui blue raised segment talk" style="width : 100 % ; min-height : 100px ;" ng-repeat="talk in myTalks = (talks | orderBy:predicate:reverse | filter:myFilter | notScheduled:scheduled)  ">
                             <div ng-show="talk.status==2" class="ui blue ribbon label">Completed</div>
                             <div ng-show="talk.status==3" class="ui green ribbon label">Accepted</div>
                             <div ng-show="talk.status==4" class="ui red ribbon label">Rejected</div>

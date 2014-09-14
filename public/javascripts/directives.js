@@ -94,4 +94,5 @@ jmaghreb.directive('uploader', function ($http) {
             '</div>'
 
     }
-})
+});
+
