@@ -140,7 +140,7 @@
                                 <div class="ui left labeled icon input">
                                     <select ng-model="selectedTalk.type.value" ng-required="true" ng-change="updateValue(selectedTalk.type,'type')">
                                         <option value="">...</option>
-                                        <option ng-repeat="lang in config.sessionTypes | orderBy:predicateList:reverse " value="{{lang.value}}">
+                                        <option ng-repeat="lang in config.sessionTypes track by $index | orderBy:predicateList:reverse " value="{{lang.value}}">
                                             {{lang.label}}</option>
                                     </select>
                                     <div class="ui corner label">
