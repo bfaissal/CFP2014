@@ -551,7 +551,7 @@ jmaghreb.config(function ($routeProvider) {
 jmaghreb.filter('notScheduled', function() {
     return function(talks,scheduled) {
         var out = [];
-        if(scheduled){
+        if(scheduled == 1){
         for (aTalk in talks){
             try{
                 if(talks[aTalk].day && talks[aTalk].day.value != "" && talks[aTalk].room && talks[aTalk].room.value != ""){
@@ -561,7 +561,25 @@ jmaghreb.filter('notScheduled', function() {
         }
         }
         else{
-            out = talks;
+            if(scheduled == 2){
+                for (aTalk in talks){
+                    try{
+                        console.info(talks[aTalk].day.value+" => "+(!talks[aTalk].day || !talks[aTalk].room || talks[aTalk].day.value))
+                        if(!talks[aTalk].day || !talks[aTalk].room || !talks[aTalk].room.value || talks[aTalk].room.value == ""
+                            || !selectedTalk.from.h || selectedTalk.from.h==""
+                            ||!selectedTalk.from.m || selectedTalk.from.m == ""
+                            ||!selectedTalk.to.h || selectedTalk.to.h == ""
+                            ||!selectedTalk.to.m || selectedTalk.from.m == ""){
+
+                            out.push(talks[aTalk]);
+                        }
+                    }catch(e){}
+                }
+            }
+            else{
+                out = talks;
+            }
+
         }
         return out;
     }

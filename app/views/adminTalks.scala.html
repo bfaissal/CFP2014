@@ -245,11 +245,17 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="two fields">
+                                            <div class="field">
+                                                <label>Scheduled</label>
+                                                <div class="ui left labeled icon input">
 
-                                        <div class="field">
-                                            <label>Scheduled</label>
-                                            <div class="ui left labeled icon input">
-                                                <input type="checkbox" ng-model="scheduled" />
+                                                    <select ng-model="scheduled">
+                                                        <option>...</option>
+                                                        <option value="1">Scheduled</option>
+                                                        <option value="2">Not scheduled</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="field">
