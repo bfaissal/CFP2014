@@ -346,7 +346,7 @@ jmaghreb.controller('AdminCtrl', function ($scope, $http,$timeout) {
     saveSuccess = false;
     $scope.reverse = false;
     $scope.hours = [];
-
+    $scope.scheduled = 2;
     $scope.minutes = [];
     $scope.minutes.push("00")
     for(i= 1; i <12 ; i++) {
@@ -564,16 +564,20 @@ jmaghreb.filter('notScheduled', function() {
             if(scheduled == 2){
                 for (aTalk in talks){
                     try{
-                        console.info(talks[aTalk].day.value+" => "+(!talks[aTalk].day || !talks[aTalk].room || talks[aTalk].day.value))
-                        if(!talks[aTalk].day || !talks[aTalk].room || !talks[aTalk].room.value || talks[aTalk].room.value == ""
-                            || !selectedTalk.from.h || selectedTalk.from.h==""
+                        console.info("not scheduled ... "+ (!talks[aTalk].day))
+
+                        if(!talks[aTalk].day  || !talks[aTalk].room
+                          //  (talks[aTalk].room && (!talks[aTalk].room.value  || talks[aTalk].room.value == "") )
+                            /*|| !selectedTalk.from.h || selectedTalk.from.h==""
                             ||!selectedTalk.from.m || selectedTalk.from.m == ""
                             ||!selectedTalk.to.h || selectedTalk.to.h == ""
-                            ||!selectedTalk.to.m || selectedTalk.from.m == ""){
+                            ||!selectedTalk.to.m || selectedTalk.from.m == ""*/){
 
                             out.push(talks[aTalk]);
                         }
-                    }catch(e){}
+                    }catch(e){
+                        console.error(e)
+                    }
                 }
             }
             else{
