@@ -496,6 +496,7 @@ object Application extends Controller with MongoController {
             val theLang = (aTalk \ "language" \ "value").as[String]
             val theType = (aTalk \ "type" \ "value").as[String]
             val theTrack = (aTalk \ "track" \ "value").as[String]
+            val theRoom = (aTalk \ "room" \ "value").as[String]
             val l = (aConfig \ "languages").as[List[JsObject]]
 
             l.foreach(el => {
@@ -514,7 +515,7 @@ object Application extends Controller with MongoController {
 
             rms.foreach(el => {
 
-              if((el\"value").as[String].equals(theLang)){
+              if((el\"value").as[String].equals(theRoom)){
                 talks.update(Json.obj(("_id" -> aTalk \ "_id")), Json.obj("$set" ->
                   aTalk.transform(__.json.update((__ \ 'room).json.put(el.transform((__ \ '$$hashKey).json.prune).get)) andThen (__ \ '_id).json.prune ).get
                 )).map(lastError => println(lastError))
