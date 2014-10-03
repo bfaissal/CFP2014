@@ -508,6 +508,22 @@ object Application extends Controller with MongoController {
               theList :+ aTalk
 
             })
+
+
+            val rms = (aConfig \ "rooms").as[List[JsObject]]
+
+            rms.foreach(el => {
+
+              if((el\"value").as[String].equals(theLang)){
+                talks.update(Json.obj(("_id" -> aTalk \ "_id")), Json.obj("$set" ->
+                  aTalk.transform(__.json.update((__ \ 'room).json.put(el.transform((__ \ '$$hashKey).json.prune).get)) andThen (__ \ '_id).json.prune ).get
+                )).map(lastError => println(lastError))
+              }
+              theList :+ aTalk
+
+            })
+
+
             /*val trak = (aConfig \ "sessionTypes").as[List[JsObject]]
             trak.foreach(el => {
               if((el\"value").as[String].equals(theType)){
