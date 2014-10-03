@@ -516,9 +516,11 @@ object Application extends Controller with MongoController {
             rms.foreach(el => {
 
               if((el\"value").as[String].equals(theRoom)){
+                println(" =======> \n\n\n ")
+                println(aTalk.transform(__.json.update((__ \ 'room).json.put(el.transform((__ \ '$$hashKey).json.prune).get)) andThen (__ \ '_id).json.prune ).get)
                 talks.update(Json.obj(("_id" -> aTalk \ "_id")), Json.obj("$set" ->
                   aTalk.transform(__.json.update((__ \ 'room).json.put(el.transform((__ \ '$$hashKey).json.prune).get)) andThen (__ \ '_id).json.prune ).get
-                )).map(lastError => println(lastError))
+                )).map(lastError => println(lastError.errMsg))
               }
               theList :+ aTalk
 
