@@ -309,7 +309,7 @@
                                         <button class="ui button" ng-show="talk.status!=5" ng-click="changeStatus(talk,5,false)"><i class="trash icon"></i></button>
                                          <div class="ui divider"></div>
                                         <button class="ui red button" ng-click="changeStatus(talk,4,false)"><i class="level down sign icon"></i></button>
-                                        <button class="ui button" ng-show="talk.status==2" ng-click="changeStatus(talk,3,false)"><i class="checkmark sign icon"></i></button>
+                                        <button class="ui button" ng-show="talk.status==2 or talk.status==4" ng-click="changeStatus(talk,3,false)"><i class="checkmark sign icon"></i></button>
                                     </div>
                                 </div>
                             </div>
